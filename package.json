@@ -11,7 +11,12 @@
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
-    "antd": "^5.25.4",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@headlessui/react": "^2.2.4",
+    "@mui/icons-material": "^7.2.0",
+    "@mui/material": "^7.2.0",
+    "antd": "^5.26.4",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.6.1",
     "jsonwebtoken": "^9.0.2",

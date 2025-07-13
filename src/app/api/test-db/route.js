@@ -4,7 +4,7 @@ export async function GET() {
   try {
     const pool = await getDbPool();
     const result = await pool.request()
-      .query('SELECT TOP 1 * FROM Artifacts');
+      .query('SELECT * FROM Admins');
 
     return Response.json(result.recordset[0]);
   } catch (err) {
