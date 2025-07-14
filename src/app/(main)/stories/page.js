@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Tag } from 'antd';
 import { FolderViewOutlined } from '@ant-design/icons';
 import StoryModal from '@/components/layout/StoryModal';
+import '@ant-design/v5-patch-for-react-19';
 
 export default function StoriesPage() {
     const [stories, setStories] = useState([]);
