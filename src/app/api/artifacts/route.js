@@ -4,8 +4,9 @@ import {
 } from '@/controllers/artifact.controller.js';
 import { requireAuth } from '@/lib/auth.js';
 
-export async function GET() {
-    return await handleListArtifacts();
+export async function GET(req) {
+    const lang = req.nextUrl.searchParams.get('lang') || 'vi';
+    return await handleListArtifacts(lang);
 }
 
 export async function POST(req) {

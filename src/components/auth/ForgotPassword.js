@@ -10,19 +10,19 @@ export default function ForgotPasswordForm({ switchToLogin }) {
 
   const onFinish = async (values) => {
     setLoading(true);
-    const { email } = values;
+    const { username } = values;
 
     try {
-      const res = await fetch("/api/auth/request-reset", {
+      const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ username }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Không thể gửi yêu cầu!");
 
-      toast.success("📩 Kiểm tra email để đặt lại mật khẩu!");
+      toast.success("📩 Hướng dẫn khôi phục đã được gửi!");
       setTimeout(() => {
         switchToLogin();
       }, 2000);
@@ -36,14 +36,11 @@ export default function ForgotPasswordForm({ switchToLogin }) {
   return (
     <Form layout="vertical" onFinish={onFinish}>
       <Form.Item
-        label="Email"
-        name="email"
-        rules={[
-          { required: true, message: "Vui lòng nhập email!" },
-          { type: "email", message: "Email không hợp lệ!" },
-        ]}
+        label="Tên đăng nhập"
+        name="username"
+        rules={[{ required: true, message: "Vui lòng nhập tên đăng nhập!" }]}
       >
-        <Input type="email" />
+        <Input />
       </Form.Item>
 
       <Button type="primary" htmlType="submit" loading={loading} block>

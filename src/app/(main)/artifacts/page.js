@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Image } from 'antd';
 import { FolderViewOutlined } from '@ant-design/icons';
 import ArtifactModal from '@/components/layout/ArtifactModal';
+import '@ant-design/v5-patch-for-react-19';
 
 export default function ArtifactsPage() {
     const [artifacts, setArtifacts] = useState([]);

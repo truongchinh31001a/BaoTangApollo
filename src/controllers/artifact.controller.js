@@ -7,8 +7,8 @@ import {
     modifyArtifactTranslation
 } from '@/services/artifact.service.js'
 
-export async function handleListArtifacts() {
-    const data = await getArtifactList();
+export async function handleListArtifacts(lang) {
+    const data = await getArtifactList(lang);
     return NextResponse.json(data);
 }
 

@@ -1,5 +1,5 @@
 import { signToken } from '@/lib/auth.js';
-import { authenticate, createAdmin } from '@/services/admin.service.js';
+import { authenticate, createAdmin, forgotAdminPassword, resetAdminPassword } from '@/services/admin.service.js';
 import { NextResponse } from 'next/server';
 
 export async function handleLogin(req) {
@@ -15,7 +15,23 @@ export async function handleLogin(req) {
     }
 
     const token = signToken(user);
-    return NextResponse.json({ token, role: user.Role, username: user.Username });
+
+    const res = NextResponse.json({
+        message: 'Đăng nhập thành công',
+        role: user.Role,
+        username: user.Username
+    });
+
+    // ✅ Gắn token vào cookie
+    res.cookies.set('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 60 * 60 * 24 * 7, // 7 ngày
+        path: '/',
+        sameSite: 'lax'
+    });
+
+    return res;
 }
 
 export async function handleCreateAdmin(req) {
@@ -29,3 +45,16 @@ export async function handleCreateAdmin(req) {
     return NextResponse.json({ success: true });
 }
 
+export async function handleForgotPassword(username) {
+    if (!username) {
+        return null;
+    }
+
+    const result = await forgotAdminPassword(username);
+
+    return result;
+}
+
+export async function handleResetPassword(token, newPassword) {
+    return await resetAdminPassword(token, newPassword);
+}

@@ -1,4 +1,4 @@
-import { findAdminByUsername, insertAdmin } from '@/models/admin.model.js';
+import { findAdminByUsername, insertAdmin, forgotPassword, resetPasswordWithToken } from '@/models/admin.model.js';
 import bcrypt from 'bcrypt';
 
 export async function authenticate(username, password) {
@@ -12,4 +12,13 @@ export async function authenticate(username, password) {
 export async function createAdmin({ username, password, role }) {
   const passwordHash = await bcrypt.hash(password, 10);
   return await insertAdmin({ username, passwordHash, role });
+}
+
+export async function forgotAdminPassword(username) {
+  return await forgotPassword(username);
+}
+
+export async function resetAdminPassword(token, newPassword) {
+  const passwordHash = await bcrypt.hash(newPassword, 10);
+  return await resetPasswordWithToken(token, passwordHash);
 }

@@ -6,8 +6,8 @@ import {
   updateArtifactTranslation
 } from '@/models/artifact.model.js'
 
-export async function getArtifactList() {
-  return await queryAllArtifacts();
+export async function getArtifactList(lang) {
+  return await queryAllArtifacts(lang);
 }
 
 export async function getArtifactDetail(id, lang) {

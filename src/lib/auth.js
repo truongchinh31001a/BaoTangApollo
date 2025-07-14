@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -23,9 +24,8 @@ export function verifyToken(token) {
     }
 }
 
-export function requireAuth(req) {
-    const authHeader = req.headers.get('authorization');
-    const token = authHeader?.split(' ')[1];
+export function requireAuth() {
+    const token = cookies().get('token')?.value;
 
     const payload = verifyToken(token);
     if (!payload) {

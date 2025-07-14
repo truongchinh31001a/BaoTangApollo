@@ -9,16 +9,16 @@ import { GoogleOutlined } from "@ant-design/icons";
 export function LoginForm() {
   const [loading, setLoading] = useState(false);
 
-  // Xử lý đăng nhập email + password
   const onFinish = async (values) => {
     setLoading(true);
-    const { email, password } = values;
+    const { username, password } = values;
 
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        credentials: "include",
+        body: JSON.stringify({ username, password }),
       });
 
       const data = await res.json();
@@ -26,7 +26,6 @@ export function LoginForm() {
 
       toast.success("🎉 Đăng nhập thành công! Đang chuyển hướng...");
 
-      // Chuyển hướng sau 2 giây
       setTimeout(() => {
         window.location.href = "/";
       }, 2000);
@@ -37,7 +36,6 @@ export function LoginForm() {
     }
   };
 
-  // Xử lý đăng nhập bằng Google OAuth
   const handleGoogleLogin = () => {
     const client_id = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     const redirect_uri = "http://localhost:3000/api/auth/callback";
@@ -52,14 +50,11 @@ export function LoginForm() {
   return (
     <Form layout="vertical" onFinish={onFinish}>
       <Form.Item
-        label="Email"
-        name="email"
-        rules={[
-          { required: true, message: "Vui lòng nhập email!" },
-          { type: "email", message: "Email không hợp lệ!" },
-        ]}
+        label="Tên đăng nhập"
+        name="username"
+        rules={[{ required: true, message: "Vui lòng nhập tên đăng nhập!" }]}
       >
-        <Input type="email" />
+        <Input />
       </Form.Item>
 
       <Form.Item

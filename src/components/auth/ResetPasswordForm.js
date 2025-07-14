@@ -1,46 +1,19 @@
+// components/ResetPasswordForm.jsx
 "use client";
 
-import '@ant-design/v5-patch-for-react-19';
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Form, Input, Button, Spin } from "antd";
-import { toast } from "react-toastify";
+import { Form, Input, Button } from "antd";
+import { toast } from "react-toastify"; 
+import '@ant-design/v5-patch-for-react-19';
 
 export default function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const [loading, setLoading] = useState(false);
-  const [checkingToken, setCheckingToken] = useState(true);
-  const [validToken, setValidToken] = useState(false);
 
-  useEffect(() => {
-    if (!token) {
-      setCheckingToken(false);
-      return;
-    }
-
-    // Gọi API xác minh token
-    fetch(`/api/auth/verify-reset?token=${token}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          toast.error("❌ Token không hợp lệ hoặc đã hết hạn!");
-          setValidToken(false);
-        } else {
-          setValidToken(true);
-        }
-      })
-      .catch(() => {
-        toast.error("❌ Lỗi hệ thống, vui lòng thử lại sau!");
-        setValidToken(false);
-      })
-      .finally(() => setCheckingToken(false));
-  }, [token]);
-
-  const onFinish = async (values) => {
+  const onFinish = async ({ newPassword }) => {
     setLoading(true);
-    const { newPassword } = values;
-
     try {
       const res = await fetch("/api/auth/reset-password", {
         method: "POST",
@@ -49,11 +22,11 @@ export default function ResetPasswordForm() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Không thể đổi mật khẩu!");
+      if (!res.ok) throw new Error(data.error || "Không thể đặt lại mật khẩu!");
 
-      toast.success("🎉 Mật khẩu đã được đổi thành công!");
+      toast.success("✅ Mật khẩu đã được đặt lại. Hãy đăng nhập lại!");
       setTimeout(() => {
-        window.location.href = "/auth"; // Chuyển về trang đăng nhập
+        window.location.href = "/"; // Hoặc chuyển sang tab Login
       }, 2000);
     } catch (error) {
       toast.error(error.message);
@@ -62,37 +35,39 @@ export default function ResetPasswordForm() {
     }
   };
 
-  if (checkingToken) {
-    return (
-      <div className="flex justify-center items-center h-32">
-        <Spin size="large" />
-      </div>
-    );
-  }
-
-  if (!token) {
-    return <p className="text-red-500 text-center">❌ Không tìm thấy token!</p>;
-  }
-
-  if (!validToken) {
-    return <p className="text-red-500 text-center">❌ Token không hợp lệ hoặc đã hết hạn!</p>;
-  }
-
   return (
     <Form layout="vertical" onFinish={onFinish}>
       <Form.Item
         label="Mật khẩu mới"
         name="newPassword"
-        rules={[
-          { required: true, message: "Vui lòng nhập mật khẩu mới!" },
-          { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự!" },
-        ]}
+        rules={[{ required: true, message: "Vui lòng nhập mật khẩu mới!" }]}
+        hasFeedback
       >
-        <Input.Password placeholder="********" />
+        <Input.Password />
       </Form.Item>
 
-      <Button type="primary" htmlType="submit" loading={loading} block>
-        Đổi Mật Khẩu
+      <Form.Item
+        label="Xác nhận mật khẩu"
+        name="confirmPassword"
+        dependencies={["newPassword"]}
+        hasFeedback
+        rules={[
+          { required: true, message: "Vui lòng xác nhận mật khẩu!" },
+          ({ getFieldValue }) => ({
+            validator(_, value) {
+              if (!value || getFieldValue("newPassword") === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject(new Error("Mật khẩu xác nhận không khớp!"));
+            },
+          }),
+        ]}
+      >
+        <Input.Password />
+      </Form.Item>
+
+      <Button type="primary" htmlType="submit" block loading={loading}>
+        Đặt lại mật khẩu
       </Button>
     </Form>
   );
