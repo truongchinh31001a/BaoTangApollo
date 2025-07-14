@@ -2,7 +2,7 @@ import { handleAnalyticsOverview } from '@/controllers/analytics.controller.js';
 import { requireAuth } from '@/lib/auth.js';
 
 export async function GET(req) {
-    const user = requireAuth(req);
+    const user = await requireAuth();
     if (user instanceof Response) return user;
 
     if (!['admin', 'editor'].includes(user.role)) {

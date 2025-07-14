@@ -10,7 +10,7 @@ export async function GET(req, context) {
 }
 
 export async function DELETE(req, context) {
-    const user = requireAuth(req);
+    const user = await requireAuth();
     if (user instanceof Response) return user;
 
     if (user.role !== 'admin') {

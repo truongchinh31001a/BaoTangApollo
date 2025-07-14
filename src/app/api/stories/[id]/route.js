@@ -9,7 +9,7 @@ export async function GET(req, context) {
 }
 
 export async function PUT(req, context) {
-    const user = requireAuth(req);
+    const user = await requireAuth();
     if (user instanceof Response) return user;
 
     if (!['admin', 'editor'].includes(user.role)) {
@@ -22,7 +22,7 @@ export async function PUT(req, context) {
 }
 
 export async function DELETE(req, context) {
-    const user = requireAuth(req);
+    const user = await requireAuth();
     if (user instanceof Response) return user;
 
     if (user.role !== 'admin') {

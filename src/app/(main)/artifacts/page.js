@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Image } from 'antd';
-import { FolderViewOutlined } from '@ant-design/icons';
-import ArtifactModal from '@/components/layout/ArtifactModal';
+import { FolderViewOutlined, PlusOutlined } from '@ant-design/icons';
+import ArtifactModal from '@/components/layout/artifacts/ArtifactModal';
+import AddArtifactModal from '@/components/layout/artifacts/AddArtifactModal';
 import '@ant-design/v5-patch-for-react-19';
 
 export default function ArtifactsPage() {
@@ -11,6 +12,7 @@ export default function ArtifactsPage() {
     const [detailVI, setDetailVI] = useState(null);
     const [detailEN, setDetailEN] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [loadingDetail, setLoadingDetail] = useState(false);
 
     const fetchArtifacts = async () => {
@@ -87,7 +89,17 @@ export default function ArtifactsPage() {
 
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-bold mb-4">Danh sách hiện vật</h1>
+            <div className="flex items-center justify-between mb-4">
+                <h1 className="text-2xl font-bold">Danh sách hiện vật</h1>
+                <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => setIsAddModalOpen(true)}
+                >
+                    Thêm mới
+                </Button>
+            </div>
+
             <Table
                 dataSource={artifacts}
                 columns={columns}
@@ -101,6 +113,12 @@ export default function ArtifactsPage() {
                 detailVI={detailVI}
                 detailEN={detailEN}
                 loading={loadingDetail}
+                onRefresh={fetchArtifacts}
+            />
+
+            <AddArtifactModal
+                open={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
                 onRefresh={fetchArtifacts}
             />
         </div>

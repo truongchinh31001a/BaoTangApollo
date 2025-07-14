@@ -10,7 +10,8 @@ export async function GET(req) {
 }
 
 export async function POST(req) {
-    const user = requireAuth(req);
+    const user = await requireAuth();
+
     if (user instanceof Response) return user; // nếu token sai trả về lỗi
 
     if (!['admin', 'editor'].includes(user.role)) {

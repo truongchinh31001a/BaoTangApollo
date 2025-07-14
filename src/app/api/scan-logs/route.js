@@ -9,7 +9,7 @@ export async function POST(req) {
 }
 
 export async function GET(req) {
-  const user = requireAuth(req);
+  const user = await requireAuth();
   if (user instanceof Response) return user;
 
   return await handleListScanLogs();

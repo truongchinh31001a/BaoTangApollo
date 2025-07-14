@@ -9,7 +9,7 @@ cloudinary.config({
 });
 
 export async function POST(req) {
-    const user = requireAuth(req);
+    const user = await requireAuth();
     if (user instanceof Response) return user;
 
     const contentType = req.headers.get('content-type') || '';

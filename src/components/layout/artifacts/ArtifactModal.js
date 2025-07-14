@@ -55,6 +55,7 @@ export default function ArtifactModal({
       if (!res.ok) throw new Error('Lỗi khi cập nhật');
       message.success('Cập nhật thành công');
       setIsEditing(false);
+      onClose();
       onRefresh?.();
     } catch (err) {
       message.error('Cập nhật thất bại');
@@ -116,8 +117,14 @@ export default function ArtifactModal({
         />
         <p><strong>Tên:</strong> {detail.Name}</p>
         <p><strong>Mô tả:</strong> {detail.Description}</p>
-        <video src={detail.VideoUrl} controls className="w-full mt-3" />
-        <audio src={detail.AudioUrl} controls className="w-full mt-3" />
+        {detail.VideoUrl && detail.VideoUrl.trim() !== '' && (
+          <video src={detail.VideoUrl} controls className="w-full mt-3" />
+        )}
+
+        {detail.AudioUrl && detail.AudioUrl.trim() !== '' && (
+          <audio src={detail.AudioUrl} controls className="w-full mt-3" />
+        )}
+
       </>
     ) : (
       <p>Không có dữ liệu</p>

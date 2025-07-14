@@ -9,7 +9,7 @@ export async function GET(req) {
 }
 
 export async function POST(req) {
-  const user = requireAuth(req);
+  const user = await requireAuth();
   if (user instanceof Response) return user;
 
   // Optional: chỉ admin/editor được tạo

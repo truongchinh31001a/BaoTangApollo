@@ -8,7 +8,7 @@ export function signToken(user) {
     return jwt.sign(
         {
             userId: user.AdminId,
-            username: user.Username,   // ✅ thêm username
+            username: user.Username,
             role: user.Role
         },
         JWT_SECRET,
@@ -24,8 +24,9 @@ export function verifyToken(token) {
     }
 }
 
-export function requireAuth() {
-    const token = cookies().get('token')?.value;
+export async function requireAuth() {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
 
     const payload = verifyToken(token);
     if (!payload) {
