@@ -1,7 +1,8 @@
 import { deleteStory, insertStory, queryStories, queryStoryWithTranslation, updateStoryTranslation } from '@/models/story.model.js';
 
-export async function getStoryList(filter) {
-    return await queryStories(filter);
+export async function getStoryList(filter = {}) {
+  const { artifactId = null, languageCode = 'vi' } = filter;
+  return await queryStories({ artifactId, languageCode });
 }
 
 export async function getStoryDetail(id, lang) {

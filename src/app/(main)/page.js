@@ -26,12 +26,15 @@ import {
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { useTranslation } from 'react-i18next';
 
 const { Title } = Typography;
 const { RangePicker } = DatePicker;
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 export default function DashboardHome() {
+  const { t } = useTranslation();
+
   const [totalScans, setTotalScans] = useState(0);
   const [languageStats, setLanguageStats] = useState([]);
   const [dailyScanCounts, setDailyScanCounts] = useState([]);
@@ -77,14 +80,14 @@ export default function DashboardHome() {
   const exportToExcel = () => {
     const ws = XLSX.utils.json_to_sheet(popularArtifacts);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Hiện vật');
+    XLSX.utils.book_append_sheet(wb, ws, t('dashboard.popular_artifacts'));
     XLSX.writeFile(wb, 'artifacts.xlsx');
   };
 
   const exportToPDF = () => {
     const doc = new jsPDF();
     autoTable(doc, {
-      head: [['Tên hiện vật', 'Số lượt quét']],
+      head: [[t('dashboard.artifact_name'), t('dashboard.scan_count')]],
       body: popularArtifacts.map((item) => [item.name, item.scanCount]),
     });
     doc.save('artifacts.pdf');
@@ -101,7 +104,7 @@ export default function DashboardHome() {
   return (
     <div style={{ padding: '24px' }}>
       <Title level={3} style={{ marginBottom: 24 }}>
-        Tổng quan hệ thống
+        {t('dashboard.title')}
       </Title>
 
       <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
@@ -114,10 +117,10 @@ export default function DashboardHome() {
         <Col>
           <Row gutter={8}>
             <Col>
-              <Button onClick={exportToExcel}>Xuất Excel</Button>
+              <Button onClick={exportToExcel}>{t('dashboard.export_excel')}</Button>
             </Col>
             <Col>
-              <Button onClick={exportToPDF}>Xuất PDF</Button>
+              <Button onClick={exportToPDF}>{t('dashboard.export_pdf')}</Button>
             </Col>
           </Row>
         </Col>
@@ -126,14 +129,14 @@ export default function DashboardHome() {
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col span={8}>
           <Card variant="borderless">
-            <Statistic title="Tổng lượt quét" value={totalScans} />
+            <Statistic title={t('dashboard.total_scans')} value={totalScans} />
           </Card>
         </Col>
       </Row>
 
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col span={12}>
-          <Card title="Phân bố ngôn ngữ" variant="borderless">
+          <Card title={t('dashboard.language_distribution')} variant="borderless">
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
@@ -159,7 +162,7 @@ export default function DashboardHome() {
         </Col>
 
         <Col span={12}>
-          <Card title="Lượt quét theo giờ" variant="borderless">
+          <Card title={t('dashboard.hourly_activity')} variant="borderless">
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={hourlyActivity}>
                 <XAxis dataKey="hour" />
@@ -174,7 +177,7 @@ export default function DashboardHome() {
 
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col span={24}>
-          <Card title="Lượt quét theo ngày" variant="borderless">
+          <Card title={t('dashboard.daily_activity')} variant="borderless">
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={dailyScanCounts}>
                 <XAxis dataKey="date" />
@@ -189,9 +192,9 @@ export default function DashboardHome() {
 
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Card title="Hiện vật phổ biến" variant="borderless">
+          <Card title={t('dashboard.popular_artifacts')} variant="borderless">
             {popularArtifacts.length === 0 ? (
-              <Empty description="Không có hiện vật nào" />
+              <Empty description={t('dashboard.no_artifacts')} />
             ) : (
               <Row gutter={[16, 16]}>
                 {popularArtifacts.map((artifact, index) => (
@@ -214,7 +217,7 @@ export default function DashboardHome() {
                     >
                       <Card.Meta
                         title={artifact.name}
-                        description={`Lượt quét: ${artifact.scanCount}`}
+                        description={`${t('dashboard.scan_count')}: ${artifact.scanCount}`}
                       />
                     </Card>
                   </Col>

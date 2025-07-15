@@ -2,17 +2,23 @@ import { getDbPool, sql } from '@/lib/db.js';
 import { v4 as uuidv4 } from 'uuid';
 
 // Trả về danh sách story (optionally theo ArtifactId)
-export async function queryStories({ artifactId } = {}) {
+export async function queryStories({ artifactId, languageCode } = {}) {
   const pool = await getDbPool();
   const result = await pool.request()
     .input('ArtifactId', sql.UniqueIdentifier, artifactId || null)
+    .input('LanguageCode', sql.NVarChar(10), languageCode || null)
     .query(`
-      SELECT s.StoryId, s.IsGlobal, s.ArtifactId, s.ImageUrl, s.CreatedAt
+      SELECT 
+        s.StoryId, s.IsGlobal, s.ArtifactId, s.ImageUrl, s.CreatedAt,
+        st.Title
       FROM Stories s
+      LEFT JOIN StoryTranslations st
+        ON s.StoryId = st.StoryId AND st.LanguageCode = @LanguageCode
       WHERE (@ArtifactId IS NULL OR s.ArtifactId = @ArtifactId)
     `);
   return result.recordset;
 }
+
 
 // Lấy story cụ thể với bản dịch
 export async function queryStoryWithTranslation(id, lang) {

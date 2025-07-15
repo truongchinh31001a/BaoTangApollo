@@ -9,9 +9,12 @@ import {
 
 export async function handleListStories(req) {
     const artifactId = req.nextUrl.searchParams.get('artifactId');
-    const stories = await getStoryList({ artifactId });
+    const languageCode = req.nextUrl.searchParams.get('lang') || 'vi'; // default 'vi'
+
+    const stories = await getStoryList({ artifactId, languageCode });
     return NextResponse.json(stories);
 }
+
 
 export async function handleGetStory(req, { id, lang }) {
     const story = await getStoryDetail(id, lang);

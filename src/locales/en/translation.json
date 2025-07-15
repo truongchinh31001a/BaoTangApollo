@@ -1,0 +1,63 @@
+{
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout",
+    "dashboard": {
+        "title": "Dashboard",
+        "export_excel": "Export Excel",
+        "export_pdf": "Export PDF",
+        "total_scans": "Tổng lượt quét",
+        "language_distribution": "Langue Distribution",
+        "hourly_activity": "Hourly Activity",
+        "daily_activity": "Daily Activity",
+        "popular_artifacts": "Popular Artifacts",
+        "no_artifacts": "No artifacts found",
+        "artifact_name": "Artifact Name",
+        "scan_count": "Scan Count"
+    },
+    "artifacts": {
+        "title": "List Artifact",
+        "add_new": "Add New",
+        "index": "STT",
+        "name": "Name",
+        "image": "Image",
+        "action": "Action",
+        "fetch_error": "Error when getting list artifact",
+        "detail_error": "Error when getting artifact detail",
+        "add_title": "Add New Artifact",
+        "save": "Save",
+        "cancel": "Cancel",
+        "image_label": "Image",
+        "add_success": "Artifact added successfully",
+        "add_error": "Error adding artifact",
+        "add_failed": "Failed to add artifact",
+        "translation": {
+            "lang_vi": "Vietnamese",
+            "lang_en": "English",
+            "name": "Artifact Name",
+            "name_required": "Please enter name!",
+            "description": "Description",
+            "media_type": "Media Type",
+            "upload_audio": "Upload Audio",
+            "upload_video": "Upload Video"
+        },
+        "description": "Description",
+        "detail_title": "Description",
+        "confirm_delete_title": "Are you sure you want to delete this artifact?",
+        "delete_success": "Artifact deleted successfully",
+        "delete_error": "Error deleting artifact",
+        "update_success": "Update successful",
+        "update_error": "Update failed",
+        "no_data": "No data available",
+        "lang_vi": "Vietnamese",
+        "lang_en": "English"
+    },
+    "common": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "close": "Close",
+        "cancel": "Cancel",
+        "save": "Save",
+        "loading": "Loading..."
+    }
+}

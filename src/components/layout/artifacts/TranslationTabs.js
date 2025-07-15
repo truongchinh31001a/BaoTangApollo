@@ -3,34 +3,37 @@
 import React from 'react';
 import { Form, Input, Select, Tabs } from 'antd';
 import UploadCloudinary from '@/components/common/UploadCloudinary';
+import { useTranslation } from 'react-i18next'; // ✅
 
 export default function TranslationTabs({ form, activeTab, setActiveTab }) {
+    const { t } = useTranslation(); // ✅
+
     const tabs = ['vi', 'en'].map((lang) => {
-        const isVI = lang === 'vi';
+        const label = lang === 'vi' ? t('artifacts.translation.lang_vi') : t('artifacts.translation.lang_en');
 
         return {
             key: lang,
-            label: isVI ? 'Tiếng Việt' : 'English',
+            label,
             children: (
                 <>
                     <Form.Item
                         name={['Translations', lang, 'Name']}
-                        label={isVI ? 'Tên hiện vật' : 'Artifact Name'}
-                        rules={[{ required: true, message: isVI ? 'Vui lòng nhập tên!' : 'Please enter name!' }]}
+                        label={t('artifacts.translation.name')}
+                        rules={[{ required: true, message: t('artifacts.translation.name_required') }]}
                     >
                         <Input />
                     </Form.Item>
 
                     <Form.Item
                         name={['Translations', lang, 'Description']}
-                        label={isVI ? 'Mô tả' : 'Description'}
+                        label={t('artifacts.translation.description')}
                     >
                         <Input.TextArea rows={3} />
                     </Form.Item>
 
                     <Form.Item
                         name={['Translations', lang, 'MediaType']}
-                        label={isVI ? 'Loại media' : 'Media Type'}
+                        label={t('artifacts.translation.media_type')}
                         initialValue="audio"
                     >
                         <Select
@@ -41,7 +44,6 @@ export default function TranslationTabs({ form, activeTab, setActiveTab }) {
                         />
                     </Form.Item>
 
-                    {/* Upload Section: dùng shouldUpdate để render lại đúng khi MediaType đổi */}
                     <Form.Item shouldUpdate={(prev, curr) =>
                         prev?.Translations?.[lang]?.MediaType !== curr?.Translations?.[lang]?.MediaType
                     }>
@@ -51,7 +53,7 @@ export default function TranslationTabs({ form, activeTab, setActiveTab }) {
 
                             return isVideo ? (
                                 <>
-                                    <Form.Item label={isVI ? 'Tải lên Video' : 'Upload Video'}>
+                                    <Form.Item label={t('artifacts.translation.upload_video')}>
                                         <UploadCloudinary
                                             folder="artifacts/video"
                                             accept="video/*"
@@ -66,7 +68,7 @@ export default function TranslationTabs({ form, activeTab, setActiveTab }) {
                                 </>
                             ) : (
                                 <>
-                                    <Form.Item label={isVI ? 'Tải lên Audio' : 'Upload Audio'}>
+                                    <Form.Item label={t('artifacts.translation.upload_audio')}>
                                         <UploadCloudinary
                                             folder="artifacts/audio"
                                             accept="audio/*"

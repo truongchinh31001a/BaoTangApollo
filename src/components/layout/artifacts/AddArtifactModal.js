@@ -3,9 +3,11 @@
 import React, { useState } from 'react';
 import { Modal, Form, Input, message } from 'antd';
 import UploadCloudinary from '@/components/common/UploadCloudinary';
-import TranslationTabs from './TranslationTabs'; // hoặc '@/components/.../TranslationTabs' nếu đặt nơi khác
+import TranslationTabs from './TranslationTabs';
+import { useTranslation } from 'react-i18next';
 
 export default function AddArtifactModal({ open, onClose, onRefresh }) {
+    const { t } = useTranslation();
     const [form] = Form.useForm();
     const [activeTab, setActiveTab] = useState('vi');
     const [loading, setLoading] = useState(false);
@@ -35,13 +37,13 @@ export default function AddArtifactModal({ open, onClose, onRefresh }) {
                 body: JSON.stringify(payload),
             });
 
-            if (!res.ok) throw new Error('Lỗi khi thêm hiện vật');
-            message.success('Đã thêm hiện vật!');
+            if (!res.ok) throw new Error(t('artifacts.add_error'));
+            message.success(t('artifacts.add_success'));
             form.resetFields();
             onClose();
             onRefresh?.();
         } catch (err) {
-            message.error(err.message || 'Thêm thất bại');
+            message.error(err.message || t('artifacts.add_failed'));
         } finally {
             setLoading(false);
         }
@@ -52,15 +54,15 @@ export default function AddArtifactModal({ open, onClose, onRefresh }) {
             open={open}
             onCancel={onClose}
             onOk={handleSubmit}
-            title="Thêm hiện vật mới"
-            okText="Lưu"
-            cancelText="Hủy"
+            title={t('artifacts.add_title')}
+            okText={t('artifacts.save')}
+            cancelText={t('artifacts.cancel')}
             confirmLoading={loading}
             width={700}
         >
             <Form layout="vertical" form={form}>
                 {/* Upload ảnh chính */}
-                <Form.Item label="Ảnh hiện vật">
+                <Form.Item label={t('artifacts.image_label')}>
                     <UploadCloudinary
                         folder="artifacts"
                         accept="image/*"

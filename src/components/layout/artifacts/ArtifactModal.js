@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Modal,
   Image,
@@ -11,7 +11,7 @@ import {
   Form,
   Input,
 } from 'antd';
-import { AudioOutlined, VideoCameraOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import '@ant-design/v5-patch-for-react-19';
 
 export default function ArtifactModal({
@@ -22,6 +22,7 @@ export default function ArtifactModal({
   loading,
   onRefresh,
 }) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('vi');
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState('');
@@ -30,7 +31,6 @@ export default function ArtifactModal({
 
   const artifactId = detailVI?.ArtifactId || detailEN?.ArtifactId;
 
-  // Khi bấm sửa → nạp dữ liệu từ tab hiện tại
   const handleEdit = () => {
     const detail = activeTab === 'vi' ? detailVI : detailEN;
     setEditName(detail?.Name || '');
@@ -48,39 +48,38 @@ export default function ArtifactModal({
         body: JSON.stringify({
           Name: editName,
           Description: editDescription,
-          // Bạn có thể thêm AudioUrl và VideoUrl ở đây nếu form có field tương ứng
         }),
       });
 
-      if (!res.ok) throw new Error('Lỗi khi cập nhật');
-      message.success('Cập nhật thành công');
+      if (!res.ok) throw new Error(t('artifacts.update_error'));
+      message.success(t('artifacts.update_success'));
       setIsEditing(false);
       onClose();
       onRefresh?.();
     } catch (err) {
-      message.error('Cập nhật thất bại');
+      message.error(t('artifacts.update_error'));
     }
     setSubmitting(false);
   };
 
   const handleDelete = async () => {
     Modal.confirm({
-      title: 'Bạn có chắc muốn xóa hiện vật này?',
-      okText: 'Xóa',
+      title: t('artifacts.confirm_delete_title'),
+      okText: t('common.delete'),
       okType: 'danger',
-      cancelText: 'Hủy',
+      cancelText: t('common.cancel'),
       onOk: async () => {
         try {
           const res = await fetch(`/api/artifacts/${artifactId}`, {
             method: 'DELETE',
             credentials: 'include',
           });
-          if (!res.ok) throw new Error('Xóa thất bại');
-          message.success('Đã xóa hiện vật');
+          if (!res.ok) throw new Error();
+          message.success(t('artifacts.delete_success'));
           onClose();
           onRefresh?.();
         } catch (err) {
-          message.error('Lỗi khi xóa hiện vật');
+          message.error(t('artifacts.delete_error'));
         }
       },
     });
@@ -90,13 +89,13 @@ export default function ArtifactModal({
     if (isEditing) {
       return (
         <Form layout="vertical">
-          <Form.Item label="Tên">
+          <Form.Item label={t('artifacts.name')}>
             <Input
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
             />
           </Form.Item>
-          <Form.Item label="Mô tả">
+          <Form.Item label={t('artifacts.description')}>
             <Input.TextArea
               rows={4}
               value={editDescription}
@@ -115,8 +114,8 @@ export default function ArtifactModal({
           width="100%"
           className="mb-3"
         />
-        <p><strong>Tên:</strong> {detail.Name}</p>
-        <p><strong>Mô tả:</strong> {detail.Description}</p>
+        <p><strong>{t('artifacts.name')}:</strong> {detail.Name}</p>
+        <p><strong>{t('artifacts.description')}:</strong> {detail.Description}</p>
         {detail.VideoUrl && detail.VideoUrl.trim() !== '' && (
           <video src={detail.VideoUrl} controls className="w-full mt-3" />
         )}
@@ -124,21 +123,20 @@ export default function ArtifactModal({
         {detail.AudioUrl && detail.AudioUrl.trim() !== '' && (
           <audio src={detail.AudioUrl} controls className="w-full mt-3" />
         )}
-
       </>
     ) : (
-      <p>Không có dữ liệu</p>
+      <p>{t('artifacts.no_data')}</p>
     );
   };
 
   const items = [
-    { key: 'vi', label: 'Tiếng Việt', children: renderTabContent(detailVI) },
-    { key: 'en', label: 'English', children: renderTabContent(detailEN) },
+    { key: 'vi', label: t('artifacts.lang_vi'), children: renderTabContent(detailVI) },
+    { key: 'en', label: t('artifacts.lang_en'), children: renderTabContent(detailEN) },
   ];
 
   return (
     <Modal
-      title="Chi tiết hiện vật"
+      title={t('artifacts.detail_title')}
       open={open}
       onCancel={() => {
         setIsEditing(false);
@@ -148,35 +146,35 @@ export default function ArtifactModal({
         <Space>
           {isEditing ? (
             <>
-              <Button onClick={() => setIsEditing(false)}>Hủy</Button>
+              <Button onClick={() => setIsEditing(false)}>{t('common.cancel')}</Button>
               <Button
                 type="primary"
                 loading={submitting}
                 onClick={handleSave}
               >
-                Lưu
+                {t('common.save')}
               </Button>
             </>
           ) : (
             <>
-              <Button onClick={handleEdit}>Sửa</Button>
-              <Button danger onClick={handleDelete}>Xóa</Button>
+              <Button onClick={handleEdit}>{t('common.edit')}</Button>
+              <Button danger onClick={handleDelete}>{t('common.delete')}</Button>
             </>
           )}
-          <Button onClick={onClose}>Đóng</Button>
+          <Button onClick={onClose}>{t('common.close')}</Button>
         </Space>
       }
       width={700}
     >
       {loading ? (
-        <p>Đang tải dữ liệu...</p>
+        <p>{t('common.loading')}</p>
       ) : (
         <Tabs
           items={items}
           activeKey={activeTab}
           onChange={(key) => {
             setActiveTab(key);
-            setIsEditing(false); // chuyển tab là tắt edit
+            setIsEditing(false);
           }}
         />
       )}

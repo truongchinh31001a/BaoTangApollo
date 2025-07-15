@@ -1,0 +1,63 @@
+{
+    "profile": "Thông tin cá nhân",
+    "settings": "Cài đặt",
+    "logout": "Đăng xuất",
+    "dashboard": {
+        "title": "Tổng quan hệ thống",
+        "export_excel": "Xuất Excel",
+        "export_pdf": "Xuất PDF",
+        "total_scans": "Tổng lượt quét",
+        "language_distribution": "Phân bố ngôn ngữ",
+        "hourly_activity": "Lượt quét theo giờ",
+        "daily_activity": "Lượt quét theo ngày",
+        "popular_artifacts": "Hiện vật phổ biến",
+        "no_artifacts": "Không có hiện vật nào",
+        "artifact_name": "Tên hiện vật",
+        "scan_count": "Số lượt quét"
+    },
+    "artifacts": {
+        "title": "Danh sách hiện vật",
+        "add_new": "Thêm mới",
+        "index": "STT",
+        "name": "Tên hiện vật",
+        "image": "Hình ảnh",
+        "action": "Thao tác",
+        "fetch_error": "Lỗi khi tải danh sách hiện vật",
+        "detail_error": "Lỗi khi lấy chi tiết hiện vật",
+        "add_title": "Thêm hiện vật mới",
+        "save": "Lưu",
+        "cancel": "Hủy",
+        "image_label": "Ảnh hiện vật",
+        "add_success": "Đã thêm hiện vật!",
+        "add_error": "Lỗi khi thêm hiện vật",
+        "add_failed": "Thêm thất bại",
+        "translation": {
+            "lang_vi": "Tiếng Việt",
+            "lang_en": "English",
+            "name": "Tên hiện vật",
+            "name_required": "Vui lòng nhập tên!",
+            "description": "Mô tả",
+            "media_type": "Loại media",
+            "upload_audio": "Tải lên Audio",
+            "upload_video": "Tải lên Video"
+        },
+        "description": "Mô tả",
+        "detail_title": "Chi tiết hiện vật",
+        "confirm_delete_title": "Bạn có chắc muốn xóa hiện vật này?",
+        "delete_success": "Đã xóa hiện vật",
+        "delete_error": "Lỗi khi xóa hiện vật",
+        "update_success": "Cập nhật thành công",
+        "update_error": "Cập nhật thất bại",
+        "no_data": "Không có dữ liệu",
+        "lang_vi": "Tiếng Việt",
+        "lang_en": "English"
+    },
+    "common": {
+        "edit": "Sửa",
+        "delete": "Xóa",
+        "close": "Đóng",
+        "cancel": "Hủy",
+        "save": "Lưu",
+        "loading": "Đang tải dữ liệu..."
+    }
+}
