@@ -57,6 +57,6 @@ export async function POST(req) {
 // Helper: Guess type
 function detectResourceType(mime) {
     if (mime.startsWith('image/')) return 'image';
-    if (mime.startsWith('video/')) return 'video';
-    return 'raw'; // audio or others
+    if (mime.startsWith('video/') || mime.startsWith('audio/')) return 'video'; // <== sửa chỗ này
+    return 'raw';
 }

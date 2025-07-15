@@ -15,7 +15,7 @@ export async function OPTIONS() {
 }
 
 export async function GET(req, context) {
-  const { id } = context.params;
+  const { id } = await context.params;
   const lang = req.nextUrl.searchParams.get('lang') || 'vi';
 
   const res = await handleGetStory(req, { id, lang });
