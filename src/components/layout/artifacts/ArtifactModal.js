@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Modal,
   Image,
@@ -13,6 +13,7 @@ import {
 } from 'antd';
 import { useTranslation } from 'react-i18next';
 import '@ant-design/v5-patch-for-react-19';
+import { QRCodeCanvas } from 'qrcode.react';
 
 export default function ArtifactModal({
   open,
@@ -28,7 +29,9 @@ export default function ArtifactModal({
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showQR, setShowQR] = useState(false);
 
+  const qrRef = useRef(null);
   const artifactId = detailVI?.ArtifactId || detailEN?.ArtifactId;
 
   const handleEdit = () => {
@@ -119,7 +122,6 @@ export default function ArtifactModal({
         {detail.VideoUrl && detail.VideoUrl.trim() !== '' && (
           <video src={detail.VideoUrl} controls className="w-full mt-3" />
         )}
-
         {detail.AudioUrl && detail.AudioUrl.trim() !== '' && (
           <audio src={detail.AudioUrl} controls className="w-full mt-3" />
         )}
@@ -130,54 +132,104 @@ export default function ArtifactModal({
   };
 
   const items = [
-    { key: 'vi', label: t('artifacts.lang_vi'), children: renderTabContent(detailVI) },
-    { key: 'en', label: t('artifacts.lang_en'), children: renderTabContent(detailEN) },
+    {
+      key: 'vi',
+      label: t('artifacts.lang_vi'),
+      children: renderTabContent(detailVI),
+    },
+    {
+      key: 'en',
+      label: t('artifacts.lang_en'),
+      children: renderTabContent(detailEN),
+    },
   ];
 
+  const downloadQRCode = () => {
+    const canvas = qrRef.current?.querySelector('canvas');
+    if (canvas) {
+      const url = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `artifact-${artifactId}.png`;
+      link.click();
+    } else {
+      message.error('Không tìm thấy mã QR để tải.');
+    }
+  };
+
   return (
-    <Modal
-      title={t('artifacts.detail_title')}
-      open={open}
-      onCancel={() => {
-        setIsEditing(false);
-        onClose();
-      }}
-      footer={
-        <Space>
-          {isEditing ? (
-            <>
-              <Button onClick={() => setIsEditing(false)}>{t('common.cancel')}</Button>
-              <Button
-                type="primary"
-                loading={submitting}
-                onClick={handleSave}
-              >
-                {t('common.save')}
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button onClick={handleEdit}>{t('common.edit')}</Button>
-              <Button danger onClick={handleDelete}>{t('common.delete')}</Button>
-            </>
-          )}
-          <Button onClick={onClose}>{t('common.close')}</Button>
-        </Space>
-      }
-      width={700}
-    >
-      {loading ? (
-        <p>{t('common.loading')}</p>
-      ) : (
-        <Tabs
-          items={items}
-          activeKey={activeTab}
-          onChange={(key) => {
-            setActiveTab(key);
-            setIsEditing(false);
-          }}
-        />
-      )}
-    </Modal>
+    <>
+      <Modal
+        title={t('artifacts.detail_title')}
+        open={open}
+        onCancel={() => {
+          setIsEditing(false);
+          onClose();
+        }}
+        footer={
+          <Space>
+            {isEditing ? (
+              <>
+                <Button onClick={() => setIsEditing(false)}>
+                  {t('common.cancel')}
+                </Button>
+                <Button
+                  type="primary"
+                  loading={submitting}
+                  onClick={handleSave}
+                >
+                  {t('common.save')}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button onClick={handleEdit}>{t('common.edit')}</Button>
+                <Button danger onClick={handleDelete}>
+                  {t('common.delete')}
+                </Button>
+              </>
+            )}
+            <Button onClick={() => setShowQR(true)}>Mã QR</Button>
+            <Button onClick={onClose}>{t('common.close')}</Button>
+          </Space>
+        }
+        width={700}
+      >
+        {loading ? (
+          <p>{t('common.loading')}</p>
+        ) : (
+          <Tabs
+            items={items}
+            activeKey={activeTab}
+            onChange={(key) => {
+              setActiveTab(key);
+              setIsEditing(false);
+            }}
+          />
+        )}
+      </Modal>
+
+      {/* Modal QR Code chỉ chứa ArtifactId */}
+      <Modal
+        open={showQR}
+        title="Mã QR ArtifactId"
+        onCancel={() => setShowQR(false)}
+        footer={
+          <Space>
+            <Button onClick={downloadQRCode} type="primary">
+              Tải mã QR
+            </Button>
+            <Button onClick={() => setShowQR(false)}>Đóng</Button>
+          </Space>
+        }
+      >
+        <div
+          ref={qrRef}
+          className="flex flex-col items-center space-y-4 text-center"
+        >
+          <QRCodeCanvas value={artifactId} size={200} />
+        </div>
+      </Modal>
+    </>
   );
 }
