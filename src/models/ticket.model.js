@@ -44,6 +44,8 @@ export async function deleteTicket(ticketId) {
 
 export async function updateTicketActivatedAt(ticketId) {
   const pool = await getDbPool();
+
+  // Cập nhật thời gian kích hoạt
   await pool.request()
     .input('TicketId', sql.UniqueIdentifier, ticketId)
     .query(`
@@ -51,4 +53,15 @@ export async function updateTicketActivatedAt(ticketId) {
       SET ActivatedAt = GETDATE()
       WHERE TicketId = @TicketId
     `);
+
+  // Trả lại LanguageCode từ bảng Tickets
+  const result = await pool.request()
+    .input('TicketId', sql.UniqueIdentifier, ticketId)
+    .query(`
+      SELECT LanguageCode
+      FROM Tickets
+      WHERE TicketId = @TicketId
+    `);
+
+  return result.recordset[0]?.LanguageCode || null;
 }

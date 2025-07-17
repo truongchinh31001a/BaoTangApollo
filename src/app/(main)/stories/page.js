@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Tag } from 'antd';
 import { FolderViewOutlined } from '@ant-design/icons';
-import StoryModal from '@/components/layout/StoryModal';
+import StoryModal from '@/components/layout/stories/StoryModal';
 import '@ant-design/v5-patch-for-react-19';
 
 export default function StoriesPage() {
@@ -66,7 +66,13 @@ export default function StoriesPage() {
             key: 'image',
             align: 'center',
             render: (url) =>
-                url ? <img src={url} alt="story" width={80} /> : <i>Không có</i>,
+                url ? (
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <img src={url} alt="story" width={80} />
+                    </div>
+                ) : (
+                    <i>Không có</i>
+                ),
         },
         {
             title: 'Ngày tạo',

@@ -111,17 +111,29 @@ export default function ArtifactModal({
 
     return detail ? (
       <>
-        <Image
-          src={detail.ImageUrl}
-          alt={detail.Name}
-          width="100%"
-          className="mb-3"
-        />
+        {detail.ImageUrl && (
+          <div className="mb-3 w-full" style={{ maxHeight: 300, overflow: 'hidden' }}>
+            <Image
+              src={detail.ImageUrl}
+              alt={detail.Name}
+              width="100%"
+              style={{ objectFit: 'contain', maxHeight: 300 }}
+            />
+          </div>
+        )}
+
         <p><strong>{t('artifacts.name')}:</strong> {detail.Name}</p>
         <p><strong>{t('artifacts.description')}:</strong> {detail.Description}</p>
+
         {detail.VideoUrl && detail.VideoUrl.trim() !== '' && (
-          <video src={detail.VideoUrl} controls className="w-full mt-3" />
+          <video
+            src={detail.VideoUrl}
+            controls
+            className="w-full mt-3"
+            style={{ maxHeight: 300, objectFit: 'contain' }}
+          />
         )}
+
         {detail.AudioUrl && detail.AudioUrl.trim() !== '' && (
           <audio src={detail.AudioUrl} controls className="w-full mt-3" />
         )}
@@ -209,7 +221,6 @@ export default function ArtifactModal({
         )}
       </Modal>
 
-      {/* Modal QR Code chỉ chứa ArtifactId */}
       <Modal
         open={showQR}
         title="Mã QR ArtifactId"

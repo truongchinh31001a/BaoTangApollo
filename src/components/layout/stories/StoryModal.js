@@ -10,6 +10,7 @@ import {
     Button,
     Space,
     message,
+    Descriptions,
 } from 'antd';
 
 export default function StoryModal({
@@ -20,9 +21,10 @@ export default function StoryModal({
     loading,
     onRefresh,
 }) {
-    const [isEditingLang, setIsEditingLang] = useState(null); // 'vi' | 'en' | null
+    const [isEditingLang, setIsEditingLang] = useState(null);
     const [form] = Form.useForm();
     const [submitting, setSubmitting] = useState(false);
+    const [activeTab, setActiveTab] = useState('vi');
 
     const storyId = detailVI?.StoryId || detailEN?.StoryId;
 
@@ -43,6 +45,7 @@ export default function StoryModal({
             const res = await fetch(`/api/stories/${storyId}?lang=${isEditingLang}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify(values),
             });
 
@@ -67,6 +70,7 @@ export default function StoryModal({
                 try {
                     const res = await fetch(`/api/stories/${storyId}`, {
                         method: 'DELETE',
+                        credentials: 'include',
                     });
                     if (!res.ok) throw new Error('Lỗi xoá');
                     message.success('Đã xoá Story');
@@ -80,19 +84,42 @@ export default function StoryModal({
         });
     };
 
-    const renderViewTab = (data, lang) => (
-        <>
-            {data?.ImageUrl && <Image src={data.ImageUrl} width="100%" className="mb-3" />}
-            <p><strong>Title:</strong> {data?.Title}</p>
-            <p><strong>Content:</strong></p>
-            <div className="border p-2 bg-gray-50 rounded whitespace-pre-line">{data?.Content}</div>
-            {data?.AudioUrl && (
-                <audio src={data.AudioUrl} controls className="w-full mt-3" />
-            )}
-            <div className="mt-4">
-                <Button onClick={() => startEdit(lang)}>Sửa {lang.toUpperCase()}</Button>
-            </div>
-        </>
+    const renderViewTab = (data) => (
+        <Descriptions bordered column={2}>
+            <Descriptions.Item label="Tiêu đề" span={2}>
+                {data?.Title}
+            </Descriptions.Item>
+
+            <Descriptions.Item label="Nội dung" span={2}>
+                    {data?.Content}
+            </Descriptions.Item>
+
+            <Descriptions.Item label="Ảnh minh hoạ" span={2}>
+                {data?.ImageUrl && (
+                    <div className="w-full" style={{ maxHeight: 300, overflow: 'hidden' }}>
+                        <Image
+                            src={data.ImageUrl}
+                            width="100%"
+                            style={{ objectFit: 'contain', maxHeight: 300 }}
+                            alt="Story Image"
+                        />
+                    </div>
+                )}
+            </Descriptions.Item>
+
+            <Descriptions.Item label="Audio" span={2}>
+                {data?.AudioUrl ? (
+                    <audio
+                        src={data.AudioUrl}
+                        controls
+                        className="w-full"
+                        style={{ maxHeight: 60 }}
+                    />
+                ) : (
+                    'Không có'
+                )}
+            </Descriptions.Item>
+        </Descriptions>
     );
 
     const renderEditTab = () => (
@@ -106,12 +133,6 @@ export default function StoryModal({
             <Form.Item label="Audio URL" name="AudioUrl">
                 <Input />
             </Form.Item>
-            <Space>
-                <Button onClick={() => setIsEditingLang(null)}>Hủy</Button>
-                <Button type="primary" onClick={handleSave} loading={submitting}>
-                    Lưu
-                </Button>
-            </Space>
         </Form>
     );
 
@@ -119,14 +140,50 @@ export default function StoryModal({
         {
             key: 'vi',
             label: 'Tiếng Việt',
-            children: isEditingLang === 'vi' ? renderEditTab() : renderViewTab(detailVI, 'vi'),
+            children:
+                isEditingLang === 'vi'
+                    ? renderEditTab()
+                    : renderViewTab(detailVI),
         },
         {
             key: 'en',
             label: 'English',
-            children: isEditingLang === 'en' ? renderEditTab() : renderViewTab(detailEN, 'en'),
+            children:
+                isEditingLang === 'en'
+                    ? renderEditTab()
+                    : renderViewTab(detailEN),
         },
     ];
+
+    const renderFooter = () => {
+        if (isEditingLang) {
+            return (
+                <Space>
+                    <Button onClick={() => setIsEditingLang(null)}>Hủy</Button>
+                    <Button
+                        type="primary"
+                        onClick={handleSave}
+                        loading={submitting}
+                    >
+                        Lưu
+                    </Button>
+                </Space>
+            );
+        }
+
+        return (
+            <Space>
+                <Button
+                    onClick={() => startEdit(activeTab)}
+                >
+                    Sửa
+                </Button>
+                <Button danger onClick={handleDelete}>
+                    Xoá Story
+                </Button>
+            </Space>
+        );
+    };
 
     return (
         <Modal
@@ -136,14 +193,21 @@ export default function StoryModal({
                 setIsEditingLang(null);
                 onClose();
             }}
-            footer={
-                <Button danger onClick={handleDelete}>
-                    Xóa Story
-                </Button>
-            }
+            footer={renderFooter()}
             width={700}
         >
-            {loading ? <p>Đang tải...</p> : <Tabs items={items} />}
+            {loading ? (
+                <p>Đang tải...</p>
+            ) : (
+                <Tabs
+                    items={items}
+                    activeKey={activeTab}
+                    onChange={(key) => {
+                        setActiveTab(key);
+                        if (!isEditingLang) setIsEditingLang(null);
+                    }}
+                />
+            )}
         </Modal>
     );
 }

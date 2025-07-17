@@ -44,9 +44,9 @@ export async function handleActivateTicket(req) {
   if (!ticket) return NextResponse.json({ error: 'Ticket not found' }, { status: 404 });
 
   if (!ticket.ActivatedAt) {
-    await updateTicketActivatedAt(TicketId);
-    return NextResponse.json({ activated: true });
+    const lang = await updateTicketActivatedAt(TicketId);
+    return NextResponse.json({ activated: true, lang });
   }
 
-  return NextResponse.json({ activated: false, message: 'Already activated' });
+  return NextResponse.json({ activated: false, message: 'Already activated', lang: ticket.LanguageCode });
 }
