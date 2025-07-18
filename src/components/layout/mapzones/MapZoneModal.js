@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Modal,
     Descriptions,
@@ -19,25 +19,29 @@ import {
     RollbackOutlined,
     ExclamationCircleOutlined,
 } from '@ant-design/icons';
-import { AlignCenter } from 'lucide-react';
+import UploadCloudinary from '@/components/common/UploadCloudinary';
 
 export default function MapZoneModal({ open, onClose, data, onRefresh }) {
     const [isEditing, setIsEditing] = useState(false);
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
 
-    if (!data) return null;
+    useEffect(() => {
+        if (isEditing && data) {
+            form.setFieldsValue({
+                Name: data.Name,
+                Floor: data.Floor,
+                MapImageUrl: data.MapImageUrl,
+            });
+        }
+    }, [isEditing, data, form]);
 
     const handleEditClick = () => {
-        form.setFieldsValue({
-            Name: data.Name,
-            Floor: data.Floor,
-            MapImageUrl: data.MapImageUrl,
-        });
         setIsEditing(true);
     };
 
     const handleCancelEdit = () => {
+        form.resetFields();
         setIsEditing(false);
     };
 
@@ -48,8 +52,8 @@ export default function MapZoneModal({ open, onClose, data, onRefresh }) {
             const res = await fetch(`/api/map-zones/${data.ZoneId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(values),
                 credentials: 'include',
+                body: JSON.stringify(values),
             });
             if (!res.ok) throw new Error('Cập nhật thất bại');
             message.success('Cập nhật thành công!');
@@ -94,11 +98,18 @@ export default function MapZoneModal({ open, onClose, data, onRefresh }) {
         });
     };
 
+    if (!data) return null;
+
     return (
         <Modal
             open={open}
-            onCancel={onClose}
+            onCancel={() => {
+                form.resetFields();
+                setIsEditing(false);
+                onClose();
+            }}
             title="Chi tiết Map Zone"
+            destroyOnHidden
             footer={
                 isEditing ? (
                     <Space>
@@ -148,17 +159,28 @@ export default function MapZoneModal({ open, onClose, data, onRefresh }) {
                         <InputNumber min={0} style={{ width: '100%' }} />
                     </Form.Item>
                     <Form.Item
-                        label="URL ảnh bản đồ"
+                        label="Ảnh bản đồ"
                         name="MapImageUrl"
-                        rules={[{ required: true, message: 'Vui lòng nhập URL ảnh' }]}
+                        rules={[{ required: true, message: 'Vui lòng chọn ảnh' }]}
                     >
-                        <Input />
+                        <UploadCloudinary
+                            folder="map-zones"
+                            value={form.getFieldValue('MapImageUrl')}
+                            onUploaded={(file) => {
+                                form.setFieldValue('MapImageUrl', file?.url || '');
+                            }}
+                        />
                     </Form.Item>
+
                 </Form>
             ) : (
                 <Descriptions bordered column={1}>
                     <Descriptions.Item label="Ảnh bản đồ">
-                        <Image src={data.MapImageUrl} width={200} style={{alignItems: 'center'}} />
+                        <Image
+                            src={data.MapImageUrl}
+                            width={240}
+                            style={{ display: 'block', margin: '0 auto' }}
+                        />
                     </Descriptions.Item>
                     <Descriptions.Item label="Tên khu">{data.Name}</Descriptions.Item>
                     <Descriptions.Item label="Tầng">{data.Floor}</Descriptions.Item>

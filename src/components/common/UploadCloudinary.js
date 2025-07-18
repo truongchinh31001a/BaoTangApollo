@@ -2,26 +2,43 @@
 
 import { Upload, message, Image } from 'antd';
 import { InboxOutlined, DeleteOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const { Dragger } = Upload;
 
-export default function UploadCloudinary({ onUploaded, folder = '', accept = 'image/*' }) {
+export default function UploadCloudinary({
+    onUploaded,
+    folder = '',
+    accept = 'image/*',
+    value, // ✅ nhận giá trị từ form
+}) {
     const [previewUrl, setPreviewUrl] = useState(null);
     const [resourceType, setResourceType] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const detectType = (mime) => {
-        if (mime.startsWith('image/')) return 'image';
-        if (mime.startsWith('video/')) return 'video';
-        if (mime.startsWith('audio/')) return 'audio';
+    // ✅ Đồng bộ khi mở form có giá trị cũ
+    useEffect(() => {
+        if (value) {
+            setPreviewUrl(value);
+            setResourceType(detectType(value));
+        } else {
+            setPreviewUrl(null);
+            setResourceType(null);
+        }
+    }, [value]);
+
+    const detectType = (urlOrMime) => {
+        if (typeof urlOrMime !== 'string') return 'raw';
+        if (urlOrMime.includes('.mp4') || urlOrMime.includes('video/')) return 'video';
+        if (urlOrMime.includes('.mp3') || urlOrMime.includes('audio/')) return 'audio';
+        if (urlOrMime.includes('.jpg') || urlOrMime.includes('.png') || urlOrMime.includes('image/')) return 'image';
         return 'raw';
     };
 
     const handleRemove = () => {
         setPreviewUrl(null);
         setResourceType(null);
-        onUploaded?.(null); // Gửi null về form nếu cần reset
+        onUploaded?.(null); // thông báo cho Form xoá giá trị
     };
 
     const customUpload = async ({ file, onSuccess, onError }) => {
@@ -40,14 +57,17 @@ export default function UploadCloudinary({ onUploaded, folder = '', accept = 'im
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Upload thất bại');
 
+            const url = data.url;
             const type = detectType(file.type);
-            setPreviewUrl(data.url);
+
+            setPreviewUrl(url);
             setResourceType(type);
             message.success('Tải lên thành công');
-            onSuccess(data);
-            onUploaded?.(data);
+            onUploaded?.(url);
+            onSuccess(data.url);
         } catch (err) {
-            message.error(err.message);
+            console.error(err);
+            message.error(err.message || 'Lỗi upload');
             onError?.(err);
         } finally {
             setLoading(false);

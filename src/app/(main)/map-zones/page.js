@@ -2,14 +2,16 @@
 
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Tag, Image, message } from 'antd';
-import { FolderViewOutlined } from '@ant-design/icons';
+import { FolderViewOutlined, PlusOutlined } from '@ant-design/icons';
 import '@ant-design/v5-patch-for-react-19';
 import MapZoneModal from '@/components/layout/mapzones/MapZoneModal';
+import AddMapZoneModal from '@/components/layout/mapzones/AddMapZoneModal'; // ✅ import
 
 export default function MapZonesPage() {
     const [mapZones, setMapZones] = useState([]);
     const [selectedZone, setSelectedZone] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false); // ✅ thêm state
 
     const fetchMapZones = async () => {
         try {
@@ -90,7 +92,17 @@ export default function MapZonesPage() {
 
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-bold mb-4">Danh sách Map Zones</h1>
+            <div className="flex items-center justify-between mb-4">
+                <h1 className="text-2xl font-bold mb-4">Danh sách Map Zones</h1>
+                <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => setIsAddModalOpen(true)} // ✅ mở modal thêm
+                >
+                    Thêm mới
+                </Button>
+            </div>
+
             <Table
                 dataSource={mapZones}
                 columns={columns}
@@ -103,6 +115,12 @@ export default function MapZonesPage() {
                 onClose={closeModal}
                 data={selectedZone}
                 onRefresh={fetchMapZones}
+            />
+
+            <AddMapZoneModal
+                open={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onSuccess={fetchMapZones} // ✅ gọi lại sau khi thêm thành công
             />
         </div>
     );
