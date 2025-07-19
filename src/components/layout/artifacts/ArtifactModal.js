@@ -14,6 +14,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import '@ant-design/v5-patch-for-react-19';
 import { QRCodeCanvas } from 'qrcode.react';
+import UploadCloudinary from '@/components/common/UploadCloudinary';
 
 export default function ArtifactModal({
   open,
@@ -28,6 +29,10 @@ export default function ArtifactModal({
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
+  const [editAudioUrl, setEditAudioUrl] = useState('');
+  const [editVideoUrl, setEditVideoUrl] = useState('');
+  const [editImageUrl, setEditImageUrl] = useState('');
+  const [selectedType, setSelectedType] = useState('audio');
   const [submitting, setSubmitting] = useState(false);
   const [showQR, setShowQR] = useState(false);
 
@@ -38,6 +43,11 @@ export default function ArtifactModal({
     const detail = activeTab === 'vi' ? detailVI : detailEN;
     setEditName(detail?.Name || '');
     setEditDescription(detail?.Description || '');
+    setEditAudioUrl(detail?.AudioUrl || '');
+    setEditVideoUrl(detail?.VideoUrl || '');
+    const imageUrl = detailVI?.ImageUrl || detailEN?.ImageUrl || '';
+    setEditImageUrl(imageUrl);
+    setSelectedType(detail?.VideoUrl ? 'video' : 'audio');
     setIsEditing(true);
   };
 
@@ -51,10 +61,24 @@ export default function ArtifactModal({
         body: JSON.stringify({
           Name: editName,
           Description: editDescription,
-        }),
+          AudioUrl: editAudioUrl,
+          VideoUrl: editVideoUrl,
+        })
       });
 
       if (!res.ok) throw new Error(t('artifacts.update_error'));
+
+      const oldImageUrl = detailVI?.ImageUrl || detailEN?.ImageUrl || '';
+      if (editImageUrl && editImageUrl !== oldImageUrl) {
+        const imgRes = await fetch(`/api/artifactImage/${artifactId}`, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ImageUrl: editImageUrl }),
+        });
+        if (!imgRes.ok) throw new Error('Cập nhật ảnh thất bại');
+      }
+
       message.success(t('artifacts.update_success'));
       setIsEditing(false);
       onClose();
@@ -92,12 +116,22 @@ export default function ArtifactModal({
     if (isEditing) {
       return (
         <Form layout="vertical">
+          <Form.Item label="Ảnh (Image)">
+            <UploadCloudinary
+              value={editImageUrl}
+              onUploaded={(url) => setEditImageUrl(url)}
+              accept="image/*"
+              folder="museum/images"
+            />
+          </Form.Item>
+
           <Form.Item label={t('artifacts.name')}>
             <Input
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
             />
           </Form.Item>
+
           <Form.Item label={t('artifacts.description')}>
             <Input.TextArea
               rows={4}
@@ -105,6 +139,39 @@ export default function ArtifactModal({
               onChange={(e) => setEditDescription(e.target.value)}
             />
           </Form.Item>
+
+          <Form.Item label="Loại media">
+            <select
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              className="w-full border rounded px-2 py-1"
+            >
+              <option value="audio">Audio</option>
+              <option value="video">Video</option>
+            </select>
+          </Form.Item>
+
+          {selectedType === 'audio' && (
+            <Form.Item label="Audio URL">
+              <UploadCloudinary
+                value={editAudioUrl}
+                onUploaded={(url) => setEditAudioUrl(url)}
+                accept="audio/*"
+                folder="museum/audio"
+              />
+            </Form.Item>
+          )}
+
+          {selectedType === 'video' && (
+            <Form.Item label="Video URL">
+              <UploadCloudinary
+                value={editVideoUrl}
+                onUploaded={(url) => setEditVideoUrl(url)}
+                accept="video/*"
+                folder="museum/video"
+              />
+            </Form.Item>
+          )}
         </Form>
       );
     }
@@ -121,7 +188,6 @@ export default function ArtifactModal({
             />
           </div>
         )}
-
         <p><strong>{t('artifacts.name')}:</strong> {detail.Name}</p>
         <p><strong>{t('artifacts.description')}:</strong> {detail.Description}</p>
 
@@ -201,7 +267,7 @@ export default function ArtifactModal({
                 </Button>
               </>
             )}
-            <Button onClick={() => setShowQR(true)}>Mã QR</Button>
+            <Button onClick={() => setShowQR(true)}>QR Code</Button>
             <Button onClick={onClose}>{t('common.close')}</Button>
           </Space>
         }

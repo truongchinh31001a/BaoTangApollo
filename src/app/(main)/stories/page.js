@@ -2,15 +2,18 @@
 
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Tag } from 'antd';
-import { FolderViewOutlined } from '@ant-design/icons';
+import { FolderViewOutlined, PlusOutlined } from '@ant-design/icons';
 import StoryModal from '@/components/layout/stories/StoryModal';
+import AddStoryModal from '@/components/layout/stories/AddStoryModal';
 import '@ant-design/v5-patch-for-react-19';
 
 export default function StoriesPage() {
     const [stories, setStories] = useState([]);
+    const [artifacts, setArtifacts] = useState([]); // 👈 Thêm state để lấy danh sách hiện vật
     const [detailVI, setDetailVI] = useState(null);
     const [detailEN, setDetailEN] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false); // 👈 THÊM MISSING STATE
     const [loadingDetail, setLoadingDetail] = useState(false);
 
     const fetchStories = async () => {
@@ -19,8 +22,15 @@ export default function StoriesPage() {
         setStories(data);
     };
 
+    const fetchArtifacts = async () => {
+        const res = await fetch('/api/artifacts');
+        const data = await res.json();
+        setArtifacts(data);
+    };
+
     useEffect(() => {
         fetchStories();
+        fetchArtifacts(); // 👈 Gọi API hiện vật để lấy options
     }, []);
 
     const openModal = async (storyId) => {
@@ -54,11 +64,11 @@ export default function StoriesPage() {
             width: 70,
         },
         {
-            title: 'IsGlobal',
-            dataIndex: 'IsGlobal',
-            key: 'isGlobal',
+            title: 'Title',
+            dataIndex: 'Title',
+            key: 'title',
             align: 'center',
-            render: (val) => (val ? <Tag color="green">TRUE</Tag> : <Tag color="red">FALSE</Tag>),
+            render: (title) => <span>{title}</span>,
         },
         {
             title: 'Ảnh',
@@ -79,7 +89,7 @@ export default function StoriesPage() {
             dataIndex: 'CreatedAt',
             key: 'created',
             align: 'center',
-            render: (date) => new Date(date).toLocaleString(),
+            render: (date) => new Date(date).toLocaleDateString(),
         },
         {
             title: 'Action',
@@ -96,7 +106,17 @@ export default function StoriesPage() {
 
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-bold mb-4">Danh sách Stories</h1>
+            <div className="flex items-center justify-between mb-4">
+                <h1 className="text-2xl font-bold mb-4">Danh sách Stories</h1>
+                <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => setIsAddModalOpen(true)}
+                >
+                    Thêm mới
+                </Button>
+            </div>
+
             <Table
                 dataSource={stories}
                 columns={columns}
@@ -111,6 +131,16 @@ export default function StoriesPage() {
                 detailEN={detailEN}
                 loading={loadingDetail}
                 onRefresh={fetchStories}
+            />
+
+            <AddStoryModal
+                open={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onRefresh={fetchStories}
+                artifactOptions={artifacts.map((a) => ({
+                    value: a.ArtifactId,
+                    label: a.Name,
+                }))}
             />
         </div>
     );

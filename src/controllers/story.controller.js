@@ -4,7 +4,8 @@ import {
     getStoryDetail,
     createStory,
     modifyStoryTranslation,
-    removeStory
+    removeStory,
+    modifyStory
 } from '@/services/story.service.js';
 
 export async function handleListStories(req) {
@@ -37,4 +38,10 @@ export async function handleUpdateStory(req, { id, lang }) {
 export async function handleDeleteStory(id) {
     await removeStory(id);
     return NextResponse.json({ deleted: true });
+}
+
+export async function handleUpdateStoryImage(req, { id }) {
+    const body = await req.json();
+    await modifyStory(id, body);
+    return NextResponse.json({ updated: true });
 }

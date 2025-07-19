@@ -13,7 +13,7 @@ export async function GET(req, context) {
 
 export async function PUT(req, context) {
     const user = await requireAuth();
-;
+
     if (user instanceof Response) return user;
 
     if (!['admin', 'editor'].includes(user.role)) {

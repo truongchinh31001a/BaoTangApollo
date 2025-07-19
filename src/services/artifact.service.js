@@ -3,7 +3,8 @@ import {
   queryAllArtifacts,
   insertArtifact,
   deleteArtifact,
-  updateArtifactTranslation
+  updateArtifactTranslation,
+  updateArtifact
 } from '@/models/artifact.model.js'
 
 export async function getArtifactList(lang) {
@@ -25,3 +26,7 @@ export async function removeArtifact(id) {
 export async function modifyArtifactTranslation(id, lang, data) {
   return await updateArtifactTranslation(id, lang, data);
 }
+
+export async function modifyArtifact(id, data){
+  return await updateArtifact(id, data);
+} 

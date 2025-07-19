@@ -93,3 +93,15 @@ export async function deleteStory(id) {
       DELETE FROM Stories WHERE StoryId = @StoryId;
     `);
 }
+
+export async function updateStory(id, data) {
+  const pool = await getDbPool();
+  await pool.request()
+    .input('StoryId', sql.UniqueIdentifier, id)
+    .input('ImageUrl', sql.NVarChar, data.ImageUrl)
+    .query(`
+      UPDATE Stories
+      SET ImageUrl = @ImageUrl
+      WHERE StoryId = @StoryId;
+    `);
+}

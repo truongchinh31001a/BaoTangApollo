@@ -4,7 +4,8 @@ import {
     getArtifactDetail,
     createArtifact,
     removeArtifact,
-    modifyArtifactTranslation
+    modifyArtifactTranslation,
+    modifyArtifact
 } from '@/services/artifact.service.js'
 
 export async function handleListArtifacts(lang) {
@@ -32,5 +33,11 @@ export async function handleDeleteArtifact(id) {
 export async function handleUpdateArtifact(req, { id, lang }) {
     const body = await req.json();
     await modifyArtifactTranslation(id, lang, body);
+    return NextResponse.json({ updated: true });
+}
+
+export async function handleUpdateArtifactImage(req, { id }) {
+    const body = await req.json();
+    await modifyArtifact(id, body);
     return NextResponse.json({ updated: true });
 }

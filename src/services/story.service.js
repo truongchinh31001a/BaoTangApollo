@@ -1,4 +1,4 @@
-import { deleteStory, insertStory, queryStories, queryStoryWithTranslation, updateStoryTranslation } from '@/models/story.model.js';
+import { deleteStory, insertStory, queryStories, queryStoryWithTranslation, updateStoryTranslation, updateStory } from '@/models/story.model.js';
 
 export async function getStoryList(filter = {}) {
   const { artifactId = null, languageCode = 'vi' } = filter;
@@ -19,4 +19,8 @@ export async function modifyStoryTranslation(id, lang, data) {
 
 export async function removeStory(id) {
     return await deleteStory(id);
+}
+
+export async function modifyStory(id, data) {
+    return await updateStory(id, data);
 }

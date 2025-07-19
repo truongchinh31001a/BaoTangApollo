@@ -12,6 +12,7 @@ import {
     message,
     Descriptions,
 } from 'antd';
+import UploadCloudinary from '@/components/common/UploadCloudinary';
 
 export default function StoryModal({
     open,
@@ -34,6 +35,7 @@ export default function StoryModal({
             Title: data?.Title || '',
             Content: data?.Content || '',
             AudioUrl: data?.AudioUrl || '',
+            ImageUrl: data?.ImageUrl || '',
         });
         setIsEditingLang(lang);
     };
@@ -43,15 +45,28 @@ export default function StoryModal({
         setSubmitting(true);
         try {
             const res = await fetch(`/api/stories/${storyId}?lang=${isEditingLang}`, {
-                method: 'PATCH',
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
                 body: JSON.stringify(values),
             });
 
             if (!res.ok) throw new Error('Cập nhật thất bại');
+
+            // Gọi API cập nhật ảnh (nếu có thay đổi)
+            if (values.ImageUrl && values.ImageUrl !== (isEditingLang === 'vi' ? detailVI?.ImageUrl : detailEN?.ImageUrl)) {
+                await fetch(`/api/storyImg/${storyId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ ImageUrl: values.ImageUrl }),
+                });
+            }
+
             message.success('Cập nhật thành công');
             setIsEditingLang(null);
+            form.resetFields();
+            onClose(); // Đóng modal
             onRefresh?.();
         } catch (err) {
             console.error(err);
@@ -91,7 +106,7 @@ export default function StoryModal({
             </Descriptions.Item>
 
             <Descriptions.Item label="Nội dung" span={2}>
-                    {data?.Content}
+                {data?.Content}
             </Descriptions.Item>
 
             <Descriptions.Item label="Ảnh minh hoạ" span={2}>
@@ -122,16 +137,29 @@ export default function StoryModal({
         </Descriptions>
     );
 
-    const renderEditTab = () => (
-        <Form layout="vertical" form={form}>
+    const renderEditForm = (
+        <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
             <Form.Item label="Title" name="Title" rules={[{ required: true }]}>
                 <Input />
             </Form.Item>
             <Form.Item label="Content" name="Content" rules={[{ required: true }]}>
                 <Input.TextArea rows={4} />
             </Form.Item>
-            <Form.Item label="Audio URL" name="AudioUrl">
-                <Input />
+            <Form.Item label="Audio (upload)" name="AudioUrl">
+                <UploadCloudinary
+                    value={form.getFieldValue('AudioUrl')}
+                    onUploaded={(url) => form.setFieldsValue({ AudioUrl: url })}
+                    accept="audio/*"
+                    folder="museum/audio"
+                />
+            </Form.Item>
+            <Form.Item label="Ảnh minh hoạ (upload)" name="ImageUrl">
+                <UploadCloudinary
+                    value={form.getFieldValue('ImageUrl')}
+                    onUploaded={(url) => form.setFieldsValue({ ImageUrl: url })}
+                    accept="image/*"
+                    folder="museum/stories"
+                />
             </Form.Item>
         </Form>
     );
@@ -140,18 +168,12 @@ export default function StoryModal({
         {
             key: 'vi',
             label: 'Tiếng Việt',
-            children:
-                isEditingLang === 'vi'
-                    ? renderEditTab()
-                    : renderViewTab(detailVI),
+            children: isEditingLang === 'vi' ? renderEditForm : renderViewTab(detailVI),
         },
         {
             key: 'en',
             label: 'English',
-            children:
-                isEditingLang === 'en'
-                    ? renderEditTab()
-                    : renderViewTab(detailEN),
+            children: isEditingLang === 'en' ? renderEditForm : renderViewTab(detailEN),
         },
     ];
 
@@ -159,12 +181,10 @@ export default function StoryModal({
         if (isEditingLang) {
             return (
                 <Space>
-                    <Button onClick={() => setIsEditingLang(null)}>Hủy</Button>
-                    <Button
-                        type="primary"
-                        onClick={handleSave}
-                        loading={submitting}
-                    >
+                    <Button onClick={() => { setIsEditingLang(null); form.resetFields(); }}>
+                        Hủy
+                    </Button>
+                    <Button type="primary" onClick={handleSave} loading={submitting}>
                         Lưu
                     </Button>
                 </Space>
@@ -173,11 +193,7 @@ export default function StoryModal({
 
         return (
             <Space>
-                <Button
-                    onClick={() => startEdit(activeTab)}
-                >
-                    Sửa
-                </Button>
+                <Button onClick={() => startEdit(activeTab)}>Sửa</Button>
                 <Button danger onClick={handleDelete}>
                     Xoá Story
                 </Button>
@@ -191,6 +207,7 @@ export default function StoryModal({
             open={open}
             onCancel={() => {
                 setIsEditingLang(null);
+                form.resetFields();
                 onClose();
             }}
             footer={renderFooter()}
@@ -200,12 +217,12 @@ export default function StoryModal({
                 <p>Đang tải...</p>
             ) : (
                 <Tabs
-                    items={items}
                     activeKey={activeTab}
                     onChange={(key) => {
                         setActiveTab(key);
                         if (!isEditingLang) setIsEditingLang(null);
                     }}
+                    items={items}
                 />
             )}
         </Modal>

@@ -107,3 +107,15 @@ export async function updateArtifactTranslation(id, lang, data) {
       WHERE ArtifactId = @ArtifactId AND LanguageCode = @LanguageCode;
     `);
 }
+
+export async function updateArtifact(id, data) {
+  const pool = await getDbPool();
+  await pool.request()
+    .input('ArtifactId', sql.UniqueIdentifier, id)
+    .input('ImageUrl', sql.NVarChar, data.ImageUrl)
+    .query(`
+      UPDATE Artifacts
+      SET ImageUrl = @ImageUrl
+      WHERE ArtifactId = @ArtifactId;
+    `);
+}
