@@ -2,11 +2,12 @@
 
 import { Modal, Form, Input, Button, Switch, Tabs, message, Select } from 'antd';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import UploadCloudinary from '@/components/common/UploadCloudinary';
 
 export default function AddStoryModal({ open, onClose, onRefresh, artifactOptions = [] }) {
+    const { t } = useTranslation();
     const [form] = Form.useForm();
-    const [imageUrl, setImageUrl] = useState(null);
     const [submitting, setSubmitting] = useState(false);
 
     const handleSubmit = async () => {
@@ -15,9 +16,9 @@ export default function AddStoryModal({ open, onClose, onRefresh, artifactOption
             setSubmitting(true);
 
             const body = {
-                IsGlobal: values.IsGlobal,
+                IsGlobal: values.IsGlobal || false,
                 ArtifactId: values.ArtifactId || null,
-                ImageUrl: imageUrl || null,
+                ImageUrl: values.ImageUrl || null,
                 Translations: [
                     {
                         LanguageCode: 'vi',
@@ -41,14 +42,14 @@ export default function AddStoryModal({ open, onClose, onRefresh, artifactOption
                 body: JSON.stringify(body),
             });
 
-            if (!res.ok) throw new Error('Thêm thất bại');
-            message.success('Thêm câu chuyện thành công!');
+            if (!res.ok) throw new Error(t('stories.add_failed'));
+
+            message.success(t('stories.add_success'));
             onClose();
             onRefresh?.();
             form.resetFields();
-            setImageUrl(null);
         } catch (err) {
-            message.error(err.message || 'Lỗi khi thêm câu chuyện');
+            message.error(err.message || t('stories.add_failed'));
         }
         setSubmitting(false);
     };
@@ -56,65 +57,72 @@ export default function AddStoryModal({ open, onClose, onRefresh, artifactOption
     const tabItems = [
         {
             key: 'vi',
-            label: 'Tiếng Việt',
+            label: t('common.vietnamese'),
             children: (
                 <>
                     <Form.Item
-                        label="Tiêu đề (VI)"
+                        label={t('stories.title_vi')}
                         name="vi_Title"
-                        rules={[{ required: true, message: 'Nhập tiêu đề' }]}
+                        rules={[{ required: true, message: t('stories.title_required') }]}
                     >
                         <Input />
                     </Form.Item>
                     <Form.Item
-                        label="Nội dung (VI)"
+                        label={t('stories.content_vi')}
                         name="vi_Content"
-                        rules={[{ required: true, message: 'Nhập nội dung' }]}
+                        rules={[{ required: true, message: t('stories.content_required') }]}
                     >
                         <Input.TextArea rows={4} />
                     </Form.Item>
-                    <Form.Item label="Audio (VI)" name="vi_AudioUrl">
-                        <UploadCloudinary
-                            value={form.getFieldValue('vi_AudioUrl')}
-                            onUploaded={(url) => {
-                                // ✅ An toàn hơn
-                                form.setFieldsValue({ vi_AudioUrl: url });
-                            }}
-                            accept="audio/*"
-                            folder="museum/audio"
-                        />
+                    <Form.Item noStyle shouldUpdate>
+                        {() => (
+                            <Form.Item label={t('stories.audio_vi')} name="vi_AudioUrl">
+                                <UploadCloudinary
+                                    value={form.getFieldValue('vi_AudioUrl' || '')}
+                                    onUploaded={(url) =>
+                                        form.setFieldsValue({ vi_AudioUrl: url })
+                                    }
+                                    accept="audio/*"
+                                    folder="museum/audio"
+                                />
+                            </Form.Item>
+                        )}
                     </Form.Item>
                 </>
             ),
         },
         {
             key: 'en',
-            label: 'English',
+            label: t('common.english'),
             children: (
                 <>
                     <Form.Item
-                        label="Title (EN)"
+                        label={t('stories.title_en')}
                         name="en_Title"
-                        rules={[{ required: true, message: 'Enter title' }]}
+                        rules={[{ required: true, message: t('stories.title_required') }]}
                     >
                         <Input />
                     </Form.Item>
                     <Form.Item
-                        label="Content (EN)"
+                        label={t('stories.content_en')}
                         name="en_Content"
-                        rules={[{ required: true, message: 'Enter content' }]}
+                        rules={[{ required: true, message: t('stories.content_required') }]}
                     >
                         <Input.TextArea rows={4} />
                     </Form.Item>
-                    <Form.Item label="Audio (EN)" name="en_AudioUrl">
-                        <UploadCloudinary
-                            value={form.getFieldValue('en_AudioUrl')}
-                            onUploaded={(url) => {
-                                form.setFieldsValue({ en_AudioUrl: url });
-                            }}
-                            accept="audio/*"
-                            folder="museum/audio"
-                        />
+                    <Form.Item noStyle shouldUpdate>
+                        {() => (
+                            <Form.Item label={t('stories.audio_en')} name="en_AudioUrl">
+                                <UploadCloudinary
+                                    value={form.getFieldValue('en_AudioUrl')}
+                                    onUploaded={(url) =>
+                                        form.setFieldsValue({ en_AudioUrl: url })
+                                    }
+                                    accept="audio/*"
+                                    folder="museum/audio"
+                                />
+                            </Form.Item>
+                        )}
                     </Form.Item>
                 </>
             ),
@@ -123,31 +131,38 @@ export default function AddStoryModal({ open, onClose, onRefresh, artifactOption
 
     return (
         <Modal
-            title="Thêm Câu Chuyện"
+            title={t('stories.add_modal_title')}
             open={open}
-            onCancel={onClose}
+            onCancel={() => {
+                form.resetFields();
+                onClose();
+            }}
             footer={null}
             width={700}
         >
             <Form layout="vertical" form={form}>
-                <Form.Item label="Gắn với hiện vật" name="ArtifactId">
+                <Form.Item label={t('stories.artifact')} name="ArtifactId">
                     <Select
                         allowClear
                         showSearch
-                        placeholder="Chọn hiện vật (nếu có)"
+                        placeholder={t('stories.select_artifact')}
                         options={artifactOptions}
                         optionFilterProp="label"
                     />
                 </Form.Item>
 
-                <Form.Item label="Hiển thị toàn bộ (IsGlobal)" name="IsGlobal" valuePropName="checked">
+                <Form.Item
+                    label={t('stories.is_global')}
+                    name="IsGlobal"
+                    valuePropName="checked"
+                >
                     <Switch />
                 </Form.Item>
 
-                <Form.Item label="Ảnh (Image)">
+                <Form.Item label={t('stories.image')} name="ImageUrl">
                     <UploadCloudinary
-                        value={imageUrl}
-                        onUploaded={setImageUrl}
+                        value={form.getFieldValue('ImageUrl')}
+                        onUploaded={(url) => form.setFieldValue('ImageUrl', url)}
                         accept="image/*"
                         folder="museum/stories"
                     />
@@ -157,10 +172,10 @@ export default function AddStoryModal({ open, onClose, onRefresh, artifactOption
 
                 <div className="flex justify-end mt-4">
                     <Button onClick={onClose} className="mr-2">
-                        Hủy
+                        {t('common.cancel')}
                     </Button>
                     <Button type="primary" loading={submitting} onClick={handleSubmit}>
-                        Thêm mới
+                        {t('common.add')}
                     </Button>
                 </div>
             </Form>

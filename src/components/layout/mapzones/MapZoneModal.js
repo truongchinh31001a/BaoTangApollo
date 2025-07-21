@@ -142,50 +142,51 @@ export default function MapZoneModal({ open, onClose, data, onRefresh }) {
                 )
             }
         >
-            {isEditing ? (
-                <Form layout="vertical" form={form}>
-                    <Form.Item
-                        label="Tên khu"
-                        name="Name"
-                        rules={[{ required: true, message: 'Vui lòng nhập tên khu' }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label="Tầng"
-                        name="Floor"
-                        rules={[{ required: true, message: 'Vui lòng nhập số tầng' }]}
-                    >
-                        <InputNumber min={0} style={{ width: '100%' }} />
-                    </Form.Item>
-                    <Form.Item
-                        label="Ảnh bản đồ"
-                        name="MapImageUrl"
-                        rules={[{ required: true, message: 'Vui lòng chọn ảnh' }]}
-                    >
-                        <UploadCloudinary
-                            folder="map-zones"
-                            value={form.getFieldValue('MapImageUrl')}
-                            onUploaded={(file) => {
-                                form.setFieldValue('MapImageUrl', file?.url || '');
-                            }}
-                        />
-                    </Form.Item>
-
-                </Form>
-            ) : (
-                <Descriptions bordered column={1}>
-                    <Descriptions.Item label="Ảnh bản đồ">
-                        <Image
-                            src={data.MapImageUrl}
-                            width={240}
-                            style={{ display: 'block', margin: '0 auto' }}
-                        />
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Tên khu">{data.Name}</Descriptions.Item>
-                    <Descriptions.Item label="Tầng">{data.Floor}</Descriptions.Item>
-                </Descriptions>
-            )}
+            <Form layout="vertical" form={form} component={false}>
+                {isEditing ? (
+                    <>
+                        <Form.Item
+                            label="Tên khu"
+                            name="Name"
+                            rules={[{ required: true, message: 'Vui lòng nhập tên khu' }]}
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Tầng"
+                            name="Floor"
+                            rules={[{ required: true, message: 'Vui lòng nhập số tầng' }]}
+                        >
+                            <InputNumber min={0} style={{ width: '100%' }} />
+                        </Form.Item>
+                        <Form.Item
+                            label="Ảnh bản đồ"
+                            name="MapImageUrl"
+                            rules={[{ required: true, message: 'Vui lòng chọn ảnh' }]}
+                        >
+                            <UploadCloudinary
+                                folder="map-zones"
+                                value={form.getFieldValue('MapImageUrl')}
+                                onUploaded={(file) => {
+                                    form.setFieldValue('MapImageUrl', file?.url || '');
+                                }}
+                            />
+                        </Form.Item>
+                    </>
+                ) : (
+                    <Descriptions bordered column={1}>
+                        <Descriptions.Item label="Ảnh bản đồ">
+                            <Image
+                                src={data.MapImageUrl}
+                                width={240}
+                                style={{ display: 'block', margin: '0 auto' }}
+                            />
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Tên khu">{data.Name}</Descriptions.Item>
+                        <Descriptions.Item label="Tầng">{data.Floor}</Descriptions.Item>
+                    </Descriptions>
+                )}
+            </Form>
         </Modal>
     );
 }

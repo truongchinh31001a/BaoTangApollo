@@ -1,15 +1,22 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Image } from 'antd';
+import { useSearchParams } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
+import Cookies from 'js-cookie';
+import { Table, Button } from 'antd';
 import { FolderViewOutlined, PlusOutlined } from '@ant-design/icons';
-import { useTranslation } from 'react-i18next'; // ✅ Import i18n
 import ArtifactModal from '@/components/layout/artifacts/ArtifactModal';
 import AddArtifactModal from '@/components/layout/artifacts/AddArtifactModal';
 import '@ant-design/v5-patch-for-react-19';
 
 export default function ArtifactsPage() {
-    const { t, i18n } = useTranslation(); // ✅ Hook i18n
+    const { t, i18n } = useTranslation();
+    const searchParams = useSearchParams();
+
+    const queryLang = searchParams.get('lang');
+    const cookieLang = Cookies.get('lang');
+    const lang = queryLang || cookieLang || 'vi';
 
     const [artifacts, setArtifacts] = useState([]);
     const [detailVI, setDetailVI] = useState(null);
@@ -18,9 +25,14 @@ export default function ArtifactsPage() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [loadingDetail, setLoadingDetail] = useState(false);
 
+    useEffect(() => {
+        i18n.changeLanguage(lang);
+        Cookies.set('lang', lang);
+        fetchArtifacts();
+    }, [lang]);
+
     const fetchArtifacts = async () => {
         try {
-            const lang = i18n.language || 'vi'; // fallback nếu undefined
             const res = await fetch(`/api/artifacts?lang=${lang}`);
             const data = await res.json();
             setArtifacts(data);
@@ -29,25 +41,17 @@ export default function ArtifactsPage() {
         }
     };
 
-    useEffect(() => {
-        fetchArtifacts();
-    }, []);
-
     const openModal = async (artifactId) => {
         setLoadingDetail(true);
         setIsModalOpen(true);
         try {
-            const lang = i18n.language || 'vi';
             const [viRes, enRes] = await Promise.all([
                 fetch(`/api/artifacts/${artifactId}?lang=vi`),
                 fetch(`/api/artifacts/${artifactId}?lang=en`),
             ]);
 
-            const viData = await viRes.json();
-            const enData = await enRes.json();
-
-            setDetailVI(viData);
-            setDetailEN(enData);
+            setDetailVI(await viRes.json());
+            setDetailEN(await enRes.json());
         } catch (error) {
             console.error(t('artifacts.detail_error'), error);
         }
@@ -78,8 +82,39 @@ export default function ArtifactsPage() {
             title: t('artifacts.image'),
             dataIndex: 'ImageUrl',
             key: 'image',
-            render: (url) => <Image width={80} src={url} />,
             align: 'center',
+            render: (url) => (
+                <div
+                    style={{
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <div
+                        style={{
+                            width: 80,
+                            height: 80,
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            overflow: 'hidden',
+                            borderRadius: 4,
+                            background: '#f5f5f5',
+                        }}
+                    >
+                        <img
+                            src={url}
+                            alt="artifact"
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                            }}
+                        />
+                    </div>
+                </div>
+            ),
         },
         {
             title: t('artifacts.action'),
@@ -108,6 +143,7 @@ export default function ArtifactsPage() {
             </div>
 
             <Table
+                bordered
                 dataSource={artifacts}
                 columns={columns}
                 rowKey="ArtifactId"

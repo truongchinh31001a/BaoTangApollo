@@ -12,6 +12,7 @@ import {
     message,
     Descriptions,
 } from 'antd';
+import { useTranslation } from 'react-i18next';
 import UploadCloudinary from '@/components/common/UploadCloudinary';
 
 export default function StoryModal({
@@ -22,6 +23,7 @@ export default function StoryModal({
     loading,
     onRefresh,
 }) {
+    const { t } = useTranslation(); // ✅ i18n hook
     const [isEditingLang, setIsEditingLang] = useState(null);
     const [form] = Form.useForm();
     const [submitting, setSubmitting] = useState(false);
@@ -51,10 +53,13 @@ export default function StoryModal({
                 body: JSON.stringify(values),
             });
 
-            if (!res.ok) throw new Error('Cập nhật thất bại');
+            if (!res.ok) throw new Error('Update failed');
 
-            // Gọi API cập nhật ảnh (nếu có thay đổi)
-            if (values.ImageUrl && values.ImageUrl !== (isEditingLang === 'vi' ? detailVI?.ImageUrl : detailEN?.ImageUrl)) {
+            if (
+                values.ImageUrl &&
+                values.ImageUrl !==
+                (isEditingLang === 'vi' ? detailVI?.ImageUrl : detailEN?.ImageUrl)
+            ) {
                 await fetch(`/api/storyImg/${storyId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -63,37 +68,37 @@ export default function StoryModal({
                 });
             }
 
-            message.success('Cập nhật thành công');
+            message.success(t('stories.update_success'));
             setIsEditingLang(null);
             form.resetFields();
-            onClose(); // Đóng modal
+            onClose();
             onRefresh?.();
         } catch (err) {
             console.error(err);
-            message.error('Lỗi khi cập nhật');
+            message.error(t('stories.update_failed'));
         }
         setSubmitting(false);
     };
 
     const handleDelete = async () => {
         Modal.confirm({
-            title: 'Bạn có chắc muốn xóa Story này?',
-            okText: 'Xóa',
+            title: t('stories.delete_confirm'),
+            okText: t('common.delete'),
             okType: 'danger',
-            cancelText: 'Hủy',
+            cancelText: t('common.cancel'),
             onOk: async () => {
                 try {
                     const res = await fetch(`/api/stories/${storyId}`, {
                         method: 'DELETE',
                         credentials: 'include',
                     });
-                    if (!res.ok) throw new Error('Lỗi xoá');
-                    message.success('Đã xoá Story');
+                    if (!res.ok) throw new Error('Delete failed');
+                    message.success(t('stories.deleted'));
                     onClose();
                     onRefresh?.();
                 } catch (err) {
                     console.error(err);
-                    message.error('Xóa thất bại');
+                    message.error(t('stories.delete_failed'));
                 }
             },
         });
@@ -101,15 +106,13 @@ export default function StoryModal({
 
     const renderViewTab = (data) => (
         <Descriptions bordered column={2}>
-            <Descriptions.Item label="Tiêu đề" span={2}>
+            <Descriptions.Item label={t('stories.name')} span={2}>
                 {data?.Title}
             </Descriptions.Item>
-
-            <Descriptions.Item label="Nội dung" span={2}>
+            <Descriptions.Item label={t('stories.content')} span={2}>
                 {data?.Content}
             </Descriptions.Item>
-
-            <Descriptions.Item label="Ảnh minh hoạ" span={2}>
+            <Descriptions.Item label={t('stories.image')} span={2}>
                 {data?.ImageUrl && (
                     <div className="w-full" style={{ maxHeight: 300, overflow: 'hidden' }}>
                         <Image
@@ -121,8 +124,7 @@ export default function StoryModal({
                     </div>
                 )}
             </Descriptions.Item>
-
-            <Descriptions.Item label="Audio" span={2}>
+            <Descriptions.Item label={t('stories.audio')} span={2}>
                 {data?.AudioUrl ? (
                     <audio
                         src={data.AudioUrl}
@@ -131,61 +133,53 @@ export default function StoryModal({
                         style={{ maxHeight: 60 }}
                     />
                 ) : (
-                    'Không có'
+                    t('common.no_data')
                 )}
             </Descriptions.Item>
         </Descriptions>
     );
 
-    const renderEditForm = (
-        <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
-            <Form.Item label="Title" name="Title" rules={[{ required: true }]}>
+    const renderEditFields = () => (
+        <>
+            <Form.Item label={t('stories.name')} name="Title" rules={[{ required: true }]}>
                 <Input />
             </Form.Item>
-            <Form.Item label="Content" name="Content" rules={[{ required: true }]}>
+            <Form.Item label={t('stories.content')} name="Content" rules={[{ required: true }]}>
                 <Input.TextArea rows={4} />
             </Form.Item>
-            <Form.Item label="Audio (upload)" name="AudioUrl">
+            <Form.Item label={t('stories.audio')} name="AudioUrl">
                 <UploadCloudinary
                     value={form.getFieldValue('AudioUrl')}
-                    onUploaded={(url) => form.setFieldsValue({ AudioUrl: url })}
+                    onUploaded={(url) => form.setFieldValue('AudioUrl', url)}
                     accept="audio/*"
                     folder="museum/audio"
                 />
             </Form.Item>
-            <Form.Item label="Ảnh minh hoạ (upload)" name="ImageUrl">
+            <Form.Item label={t('stories.image')} name="ImageUrl">
                 <UploadCloudinary
                     value={form.getFieldValue('ImageUrl')}
-                    onUploaded={(url) => form.setFieldsValue({ ImageUrl: url })}
+                    onUploaded={(url) => form.setFieldValue('ImageUrl', url)}
                     accept="image/*"
                     folder="museum/stories"
                 />
             </Form.Item>
-        </Form>
+        </>
     );
-
-    const items = [
-        {
-            key: 'vi',
-            label: 'Tiếng Việt',
-            children: isEditingLang === 'vi' ? renderEditForm : renderViewTab(detailVI),
-        },
-        {
-            key: 'en',
-            label: 'English',
-            children: isEditingLang === 'en' ? renderEditForm : renderViewTab(detailEN),
-        },
-    ];
 
     const renderFooter = () => {
         if (isEditingLang) {
             return (
                 <Space>
-                    <Button onClick={() => { setIsEditingLang(null); form.resetFields(); }}>
-                        Hủy
+                    <Button
+                        onClick={() => {
+                            setIsEditingLang(null);
+                            form.resetFields();
+                        }}
+                    >
+                        {t('common.cancel')}
                     </Button>
                     <Button type="primary" onClick={handleSave} loading={submitting}>
-                        Lưu
+                        {t('common.save')}
                     </Button>
                 </Space>
             );
@@ -193,9 +187,9 @@ export default function StoryModal({
 
         return (
             <Space>
-                <Button onClick={() => startEdit(activeTab)}>Sửa</Button>
+                <Button onClick={() => startEdit(activeTab)}>{t('common.edit')}</Button>
                 <Button danger onClick={handleDelete}>
-                    Xoá Story
+                    {t('common.delete')}
                 </Button>
             </Space>
         );
@@ -203,7 +197,7 @@ export default function StoryModal({
 
     return (
         <Modal
-            title="Chi tiết Story"
+            title={t('stories.detail_modal_title')}
             open={open}
             onCancel={() => {
                 setIsEditingLang(null);
@@ -214,16 +208,35 @@ export default function StoryModal({
             width={700}
         >
             {loading ? (
-                <p>Đang tải...</p>
+                <p>{t('common.loading')}</p>
             ) : (
-                <Tabs
-                    activeKey={activeTab}
-                    onChange={(key) => {
-                        setActiveTab(key);
-                        if (!isEditingLang) setIsEditingLang(null);
-                    }}
-                    items={items}
-                />
+                <Form form={form} layout="vertical">
+                    <Tabs
+                        activeKey={activeTab}
+                        onChange={(key) => {
+                            setActiveTab(key);
+                            if (!isEditingLang) setIsEditingLang(null);
+                        }}
+                        items={[
+                            {
+                                key: 'vi',
+                                label: t('common.vietnamese'),
+                                children:
+                                    isEditingLang === 'vi'
+                                        ? renderEditFields()
+                                        : renderViewTab(detailVI),
+                            },
+                            {
+                                key: 'en',
+                                label: t('common.english'),
+                                children:
+                                    isEditingLang === 'en'
+                                        ? renderEditFields()
+                                        : renderViewTab(detailEN),
+                            },
+                        ]}
+                    />
+                </Form>
             )}
         </Modal>
     );

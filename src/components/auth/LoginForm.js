@@ -36,16 +36,16 @@ export function LoginForm() {
     }
   };
 
-  const handleGoogleLogin = () => {
-    const client_id = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    const redirect_uri = "http://localhost:3000/api/auth/callback";
-    const scope = "openid email profile";
-    const response_type = "code";
+  // const handleGoogleLogin = () => {
+  //   const client_id = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  //   const redirect_uri = "http://localhost:3000/api/auth/callback";
+  //   const scope = "openid email profile";
+  //   const response_type = "code";
 
-    const googleAuthUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${client_id}&redirect_uri=${redirect_uri}&scope=${scope}&response_type=${response_type}&access_type=offline`;
+  //   const googleAuthUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${client_id}&redirect_uri=${redirect_uri}&scope=${scope}&response_type=${response_type}&access_type=offline`;
 
-    window.location.href = googleAuthUrl;
-  };
+  //   window.location.href = googleAuthUrl;
+  // };
 
   return (
     <Form layout="vertical" onFinish={onFinish}>
@@ -69,14 +69,14 @@ export function LoginForm() {
         Đăng nhập
       </Button>
 
-      <Button
+      {/* <Button
         icon={<GoogleOutlined />}
         className="mt-2 w-full flex items-center justify-center border border-gray-300 hover:bg-gray-100 text-gray-700 py-2 rounded"
         onClick={handleGoogleLogin}
         style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
       >
         Đăng nhập bằng Google
-      </Button>
+      </Button> */}
     </Form>
   );
 }

@@ -104,6 +104,7 @@ export default function MapZonesPage() {
             </div>
 
             <Table
+                bordered
                 dataSource={mapZones}
                 columns={columns}
                 rowKey="ZoneId"
