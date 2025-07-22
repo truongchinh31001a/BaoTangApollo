@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import Cookies from 'js-cookie';
-import { Table, Button } from 'antd';
+import { Table, Button, Tooltip } from 'antd';
 import { FolderViewOutlined, PlusOutlined } from '@ant-design/icons';
 import ArtifactModal from '@/components/layout/artifacts/ArtifactModal';
 import AddArtifactModal from '@/components/layout/artifacts/AddArtifactModal';
@@ -64,13 +64,13 @@ export default function ArtifactsPage() {
         setDetailEN(null);
     };
 
-    const columns = [
+    const columns = useMemo(() => [
         {
             title: t('artifacts.index'),
             key: 'index',
             render: (_, __, index) => index + 1,
             align: 'center',
-            width: 70,
+            width: 60,
         },
         {
             title: t('artifacts.name'),
@@ -83,6 +83,7 @@ export default function ArtifactsPage() {
             dataIndex: 'ImageUrl',
             key: 'image',
             align: 'center',
+            width: 400,
             render: (url) => (
                 <div
                     style={{
@@ -93,8 +94,8 @@ export default function ArtifactsPage() {
                 >
                     <div
                         style={{
-                            width: 80,
-                            height: 80,
+                            width: 100,
+                            height: 100,
                             display: 'flex',
                             justifyContent: 'center',
                             alignItems: 'center',
@@ -119,15 +120,19 @@ export default function ArtifactsPage() {
         {
             title: t('artifacts.action'),
             key: 'action',
-            render: (_, record) => (
-                <Button
-                    icon={<FolderViewOutlined />}
-                    onClick={() => openModal(record.ArtifactId)}
-                />
-            ),
+            width: 120,
             align: 'center',
+            ellipsis: true,
+            render: (_, record) => (
+                <Tooltip title={t('artifacts.view')}>
+                    <Button
+                        icon={<FolderViewOutlined />}
+                        onClick={() => openModal(record.ArtifactId)}
+                    />
+                </Tooltip>
+            ),
         },
-    ];
+    ], [t]);
 
     return (
         <div className="p-6">
@@ -148,6 +153,7 @@ export default function ArtifactsPage() {
                 columns={columns}
                 rowKey="ArtifactId"
                 pagination={{ pageSize: 5 }}
+                scroll={{ x: 'max-content' }}
             />
 
             <ArtifactModal

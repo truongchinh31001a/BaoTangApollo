@@ -6,7 +6,8 @@ import {
     createOrUpdateLocation,
     updateLocationPosition,
     removeArtifactLocation,
-    getArtifactLocationbyId
+    getArtifactLocationbyId,
+    getArtifactLocationByZone
 } from '@/services/artifact-location.service.js';
 
 // Lấy danh sách tất cả vị trí hiện vật
@@ -52,4 +53,15 @@ export async function handleUpdateLocationPosition(req, { artifactId }) {
 export async function handleDeleteLocation({ artifactId }) {
     await removeArtifactLocation(artifactId);
     return NextResponse.json({ deleted: true });
+}
+
+export async function handleGetLocationsByZone(req, { zoneId }) {
+    const lang = req.nextUrl.searchParams.get('lang') || 'vi';
+    const data = await getArtifactLocationByZone(zoneId, lang);
+
+    if (!data || data.length === 0) {
+        return NextResponse.json({ error: 'No artifacts found in this zone' }, { status: 404 });
+    }
+
+    return NextResponse.json(data);
 }

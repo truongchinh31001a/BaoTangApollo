@@ -61,7 +61,8 @@
         "loading": "Đang tải dữ liệu...",
         "vietnamese": "Tiếng Việt",
         "english": "English",
-        "no_data": "Không có"
+        "no_data": "Không có",
+        "action": "Hành động"
     },
     "artifact": {
         "index": "STT",
@@ -120,5 +121,18 @@
         "content_required": "Vui lòng nhập nội dung",
         "add_success": "Thêm câu chuyện thành công!",
         "add_failed": "Lỗi khi thêm câu chuyện"
+    },
+    "mapzones": {
+        "title": "Danh sách Map Zones",
+        "add_new": "Thêm mới",
+        "index": "STT",
+        "name": "Tên khu",
+        "floor": "Tầng",
+        "floor_prefix": "Tầng",
+        "map_image": "Ảnh bản đồ",
+        "action": "Tác vụ",
+        "no_image": "Không có",
+        "view_detail": "Xem chi tiết",
+        "fetch_error": "Không thể tải danh sách khu vực"
     }
 }

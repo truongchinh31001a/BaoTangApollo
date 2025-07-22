@@ -13,11 +13,28 @@ export async function getAllArtifactLocations() {
 }
 
 // Lấy vị trí theo ArtifactId
-export async function getArtifactLocation(artifactId) {
+export async function getArtifactLocation(artifactId, lang = 'vi') {
     const pool = await getDbPool();
     const result = await pool.request()
         .input('ArtifactId', sql.UniqueIdentifier, artifactId)
-        .query(`SELECT * FROM ArtifactLocations WHERE ArtifactId = @ArtifactId`);
+        .input('Lang', sql.NVarChar, lang)
+        .query(`
+            SELECT 
+                al.ArtifactId,
+                al.ZoneId,
+                al.PosX,
+                al.PosY,
+                at.Name AS ArtifactName,
+                z.Name AS ZoneName,
+                z.MapImageUrl
+            FROM ArtifactLocations al
+            JOIN Artifacts a ON al.ArtifactId = a.ArtifactId
+            LEFT JOIN ArtifactTranslations at 
+                ON at.ArtifactId = a.ArtifactId AND at.LanguageCode = @Lang
+            LEFT JOIN MapZones z ON al.ZoneId = z.ZoneId
+            WHERE al.ArtifactId = @ArtifactId
+        `);
+    
     return result.recordset[0];
 }
 
@@ -71,4 +88,28 @@ export async function deleteArtifactLocation(artifactId) {
     await pool.request()
         .input('ArtifactId', sql.UniqueIdentifier, artifactId)
         .query(`DELETE FROM ArtifactLocations WHERE ArtifactId = @ArtifactId`);
+}
+
+export async function getArtifactsByZoneId(zoneId, lang) {
+    const pool = await getDbPool();
+    const result = await pool.request()
+        .input('ZoneId', sql.UniqueIdentifier, zoneId)
+        .input('Lang', sql.NVarChar, lang)
+        .query(`
+            SELECT
+                a.ArtifactId,
+                a.ImageUrl,
+                at.Name,
+                at.Description,
+                al.PosX,
+                al.PosY,
+                z.MapImageUrl AS ZoneImageUrl,      -- ✅ Thêm ảnh của zone
+                z.Name AS ZoneName                  -- ✅ Optionally lấy luôn tên zone
+            FROM ArtifactLocations al
+            JOIN Artifacts a ON al.ArtifactId = a.ArtifactId
+            JOIN ArtifactTranslations at ON at.ArtifactId = a.ArtifactId AND at.LanguageCode = @Lang
+            JOIN MapZones z ON al.ZoneId = z.ZoneId
+            WHERE al.ZoneId = @ZoneId
+        `);
+    return result.recordset;
 }

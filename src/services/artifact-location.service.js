@@ -1,4 +1,4 @@
-import { getAllArtifactLocations, getArtifactLocation, updateArtifactLocationPosition, upsertArtifactLocation, deleteArtifactLocation } from "@/models/artifact-location.model";
+import { getAllArtifactLocations, getArtifactLocation, updateArtifactLocationPosition, upsertArtifactLocation, deleteArtifactLocation, getArtifactsByZoneId } from "@/models/artifact-location.model";
 
 
 export async function listArtifactLocations() {
@@ -19,4 +19,8 @@ export async function updateLocationPosition(artifactId, data) {
 
 export async function removeArtifactLocation(artifactId) {
     return await deleteArtifactLocation(artifactId);
+}
+
+export async function getArtifactLocationByZone(zoneId, lang) {
+    return await getArtifactsByZoneId(zoneId, lang);
 }

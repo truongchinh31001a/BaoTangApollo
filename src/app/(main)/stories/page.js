@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import Cookies from 'js-cookie';
-import { Table, Button } from 'antd';
+import { Table, Button, Tooltip } from 'antd';
 import { FolderViewOutlined, PlusOutlined } from '@ant-design/icons';
 import StoryModal from '@/components/layout/stories/StoryModal';
 import AddStoryModal from '@/components/layout/stories/AddStoryModal';
@@ -14,7 +14,6 @@ export default function StoriesPage() {
     const { t, i18n } = useTranslation();
     const searchParams = useSearchParams();
 
-    // 👇 Lấy lang ưu tiên: query > cookie > 'vi'
     const queryLang = searchParams.get('lang');
     const cookieLang = Cookies.get('lang');
     const lang = queryLang || cookieLang || 'vi';
@@ -68,26 +67,26 @@ export default function StoriesPage() {
         setDetailEN(null);
     };
 
-    const columns = [
+    const columns = useMemo(() => [
         {
             title: t('stories.index'),
             key: 'index',
             render: (_, __, index) => index + 1,
             align: 'center',
-            width: 70,
+            width: 60,
         },
         {
             title: t('stories.name'),
             dataIndex: 'Title',
             key: 'title',
             align: 'center',
-            render: (title) => <span>{title}</span>,
         },
         {
             title: t('stories.image'),
             dataIndex: 'ImageUrl',
             key: 'image',
             align: 'center',
+            width: 400,
             render: (url) =>
                 url ? (
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -102,6 +101,7 @@ export default function StoriesPage() {
             dataIndex: 'CreatedAt',
             key: 'created',
             align: 'center',
+            width: 200,
             render: (date) =>
                 new Date(date).toLocaleString(lang === 'en' ? 'en-US' : 'vi-VN', {
                     day: '2-digit',
@@ -113,14 +113,18 @@ export default function StoriesPage() {
             title: t('stories.action'),
             key: 'action',
             align: 'center',
+            width: 120,
+            ellipsis: true,
             render: (_, record) => (
-                <Button
-                    icon={<FolderViewOutlined />}
-                    onClick={() => openModal(record.StoryId)}
-                />
+                <Tooltip title={t('stories.view')}>
+                    <Button
+                        icon={<FolderViewOutlined />}
+                        onClick={() => openModal(record.StoryId)}
+                    />
+                </Tooltip>
             ),
         },
-    ];
+    ], [t, lang]);
 
     return (
         <div className="p-6">
@@ -141,6 +145,7 @@ export default function StoriesPage() {
                 columns={columns}
                 rowKey="StoryId"
                 pagination={{ pageSize: 5 }}
+                scroll={{ x: 'max-content' }}
             />
 
             <StoryModal

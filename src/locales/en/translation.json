@@ -62,7 +62,8 @@
         "vietnamese": "Vietnamese",
         "english": "English",
         "add": "Thêm mới",
-        "no_data": "No data"
+        "no_data": "No data",
+        "action": "Action"
     },
     "artifact": {
         "index": "No.",
@@ -121,5 +122,18 @@
         "content_required": "Please enter content",
         "add_success": "Story added successfully!",
         "add_failed": "Failed to add story"
+    },
+    "mapzones": {
+        "title": "Map Zones List",
+        "add_new": "Add New",
+        "index": "No.",
+        "name": "Zone Name",
+        "floor": "Floor",
+        "floor_prefix": "Floor",
+        "map_image": "Map Image",
+        "action": "Action",
+        "no_image": "No image",
+        "view_detail": "View Details",
+        "fetch_error": "Unable to load map zones"
     }
 }

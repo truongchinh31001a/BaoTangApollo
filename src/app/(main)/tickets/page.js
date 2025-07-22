@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
     Table,
     Button,
@@ -8,6 +8,7 @@ import {
     Modal,
     message,
     Tag,
+    Tooltip,
 } from 'antd';
 import {
     FolderViewOutlined,
@@ -58,13 +59,13 @@ export default function TicketPage() {
         setTickets((prev) => [newTicket, ...prev]);
     };
 
-    const columns = [
+    const columns = useMemo(() => [
         {
             title: t('tickets.index'),
             key: 'index',
             render: (_, __, index) => index + 1,
             align: 'center',
-            width: 70,
+            width: 60,
         },
         {
             title: t('tickets.id'),
@@ -78,6 +79,7 @@ export default function TicketPage() {
             dataIndex: 'LanguageCode',
             key: 'LanguageCode',
             align: 'center',
+            width: 100,
             render: (lang) => (
                 <Tag color={lang === 'vi' ? 'green' : 'blue'}>{lang}</Tag>
             ),
@@ -100,32 +102,31 @@ export default function TicketPage() {
             title: t('tickets.action'),
             key: 'action',
             align: 'center',
+            width: 120,
+            fixed: 'right',
+            ellipsis: true,
             render: (_, record) => (
-                <Space>
+                <Tooltip title={t('tickets.view')}>
                     <Button
                         icon={<FolderViewOutlined />}
                         onClick={() => openDetailModal(record)}
                     />
-                </Space>
+                </Tooltip>
             ),
         },
-    ];
+    ], [t]);
 
     return (
         <div className="p-6">
             <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold mb-4">
-                    {t('tickets.title')}
-                </h1>
-                <div className="space-x-2">
-                    <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={() => setIsAddModalOpen(true)}
-                    >
-                        {t('tickets.add_new')}
-                    </Button>
-                </div>
+                <h1 className="text-2xl font-bold">{t('tickets.title')}</h1>
+                <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => setIsAddModalOpen(true)}
+                >
+                    {t('tickets.add_new')}
+                </Button>
             </div>
 
             <Table
@@ -135,6 +136,7 @@ export default function TicketPage() {
                 loading={loading}
                 bordered
                 pagination={{ pageSize: 5 }}
+                scroll={{ x: 'max-content' }}
             />
 
             <TicketDetailModal
