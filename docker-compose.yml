@@ -28,6 +28,17 @@ services:
     volumes:
       - mssql_data:/var/opt/mssql
       - ./sql:/init
+    command: >
+      /bin/bash -c "
+        /opt/mssql/bin/sqlservr & 
+        echo '⏳ Waiting for SQL Server to be ready...' &&
+        until /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'YourStrong!Passw0rd' -Q 'SELECT 1' > /dev/null 2>&1; do
+          sleep 1
+        done &&
+        echo '🚀 Running init.sql...' &&
+        /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'YourStrong!Passw0rd' -i /init/init.sql &&
+        wait
+      "
 
 volumes:
   mssql_data:

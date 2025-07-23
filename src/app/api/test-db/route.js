@@ -6,7 +6,7 @@ export async function GET() {
     const result = await pool.request()
       .query('SELECT * FROM Admins');
 
-    return Response.json(result.recordset[0]);
+    return Response.json("connect success");
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 });
   }
