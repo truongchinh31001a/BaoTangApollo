@@ -19,19 +19,19 @@ services:
         condition: service_healthy
 
   db:
-    image: mcr.microsoft.com/azure-sql-edge:latest
-    platform: linux/amd64   # ✅ Thêm dòng này
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    platform: linux/amd64
     container_name: sql-server
     ports:
       - '1433:1433'
     environment:
-      - ACCEPT_EULA=1
-      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong!Passw0rd
     volumes:
       - mssql_data:/var/opt/mssql
       - ./sql:/init
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'YourStrong!Passw0rd' -Q 'SELECT 1'"]
+      test: [ "CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'YourStrong!Passw0rd' -Q 'SELECT 1'" ]
       interval: 10s
       timeout: 10s
       retries: 10
