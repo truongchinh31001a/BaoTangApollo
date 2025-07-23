@@ -134,10 +134,10 @@
         "add_failed": "Failed to add story"
     },
     "mapzones": {
-        "title": "Map Zones List",
+        "title": "List Map",
         "add_new": "Add New",
         "index": "No.",
-        "name": "Zone Name",
+        "name": "Name",
         "floor": "Floor",
         "floor_prefix": "Floor",
         "map_image": "Map Image",
@@ -153,7 +153,7 @@
         "artifacts": "Artifacts",
         "artifact_locations": "Artifact Locations",
         "stories": "Stories",
-        "map_zones": "Map Zones"
+        "map_zones": "Map"
     },
     "auth": {
         "login": "Login",

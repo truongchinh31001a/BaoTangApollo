@@ -1,4 +1,5 @@
 import { getDbPool, sql } from '@/lib/db.js';
+import { sendResetPasswordEmail } from '@/lib/mail';
 import crypto from 'crypto';
 
 export async function findAdminByUsername(username) {
@@ -31,7 +32,7 @@ export async function forgotPassword(username) {
   const result = await pool.request()
     .input("Username", sql.NVarChar, username)
     .query(`
-      SELECT AdminId, Username FROM Admins WHERE Username = @Username
+      SELECT AdminId, Username, Email FROM Admins WHERE Username = @Username
     `);
 
   const admin = result.recordset[0];
@@ -57,6 +58,8 @@ export async function forgotPassword(username) {
       VALUES (@Token, @AdminId, @ExpiresAt)
     `);
 
+  // Gửi email với token
+  await sendResetPasswordEmail(admin.Email, token);
   return { username: admin.Username, token, expiresAt };
 }
 

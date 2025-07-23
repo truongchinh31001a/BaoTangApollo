@@ -133,10 +133,10 @@
         "add_failed": "Lỗi khi thêm câu chuyện"
     },
     "mapzones": {
-        "title": "Danh sách Map Zones",
+        "title": "Danh sách bản đồ",
         "add_new": "Thêm mới",
         "index": "STT",
-        "name": "Tên khu",
+        "name": "Tên",
         "floor": "Tầng",
         "floor_prefix": "Tầng",
         "map_image": "Ảnh bản đồ",
@@ -152,7 +152,7 @@
         "artifacts": "Hiện vật",
         "artifact_locations": "Vị trí hiện vật",
         "stories": "Câu chuyện",
-        "map_zones": "Khu vực bản đồ"
+        "map_zones": "Bản đồ"
     },
     "auth": {
         "login": "Đăng nhập",

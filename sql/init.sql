@@ -1,5 +1,3 @@
-
--- Tạo lại database
 CREATE DATABASE apollo;
 GO
 
@@ -96,25 +94,6 @@ CREATE TABLE PasswordResetTokens (
     ExpiresAt DATETIME
 );
 
-
-select * from Admins
-select * from Tickets
-select * from Artifacts
-select * from ArtifactTranslations
-select * from Stories
-select * from StoryTranslations
-select * from MapZones
-select * from ArtifactLocations
-select * from ScanLogs
-select * from PasswordResetTokens
-SELECT TOP 1 * FROM Artifacts
-SELECT * FROM ArtifactTranslations WHERE LanguageCode = 'en'
-
-DELETE FROM Admins
-DELETE FROM Tickets
-DELETE FROM Artifacts
-DELETE FROM MapZones
-
 --Dữ liệu mẫu
 USE apollo;
 GO
@@ -126,36 +105,4 @@ DECLARE @StoryId UNIQUEIDENTIFIER = NEWID();
 
 -- 1. Admin mẫu
 INSERT INTO Admins (Username, PasswordHash, Role, Email)
-VALUES ('admin', 'hashed_password_here', 'admin', 'admin@gmail.com');
-
--- 2. Vé vào cổng
-INSERT INTO Tickets (TicketId, LanguageCode) VALUES (NEWID(), 'vi');
-INSERT INTO Tickets (TicketId, LanguageCode) VALUES (NEWID(), 'en');
-
--- 3. Khu trưng bày
-INSERT INTO MapZones (ZoneId, Name, Floor, MapImageUrl)
-VALUES (@ZoneId, N'Khu A', 1, 'https://example.com/maps/floor1.jpg');
-
--- 4. Hiện vật
-INSERT INTO Artifacts (ArtifactId, ImageUrl)
-VALUES (@ArtifactId, 'https://example.com/images/drum.jpg');
-
--- 5. Bản dịch hiện vật (đa ngôn ngữ)
-INSERT INTO ArtifactTranslations (ArtifactId, LanguageCode, Name, Description, AudioUrl, VideoUrl)
-VALUES 
-(@ArtifactId, 'vi', N'Trống đồng Đông Sơn', N'Một biểu tượng của văn hóa Đông Sơn', 'https://example.com/audio/drum_vi.mp3', 'https://example.com/videos/drum_vi.mp4'),
-(@ArtifactId, 'en', N'Dong Son Bronze Drum', N'A symbol of Dong Son culture', 'https://example.com/audio/drum_en.mp3', 'https://example.com/videos/drum_en.mp4');
-
--- 6. Gắn hiện vật vào vị trí bản đồ
-INSERT INTO ArtifactLocations (ArtifactId, ZoneId, PosX, PosY)
-VALUES (@ArtifactId, @ZoneId, 120.5, 200.3);
-
--- 7. Câu chuyện về hiện vật
-INSERT INTO Stories (StoryId, IsGlobal, ArtifactId, ImageUrl)
-VALUES (@StoryId, 0, @ArtifactId, 'https://example.com/story/drum.jpg');
-
--- 8. Bản dịch câu chuyện
-INSERT INTO StoryTranslations (StoryId, LanguageCode, Title, Content, AudioUrl)
-VALUES 
-(@StoryId, 'vi', N'Nguồn gốc trống đồng', N'Trống đồng có từ thời Hùng Vương...', 'https://example.com/story/audio_vi.mp3'),
-(@StoryId, 'en', N'Origin of bronze drums', N'Bronze drums date back to the Hung Kings...', 'https://example.com/story/audio_en.mp3');
+VALUES ('admin', 'hashed_password_here', 'admin', 'truongchinh31001@gmail.com');
