@@ -15,8 +15,7 @@ services:
       - EMAIL_PASS=rdmb ficz spvs xgsv
       - BASE_URL=http://localhost:3000
     depends_on:
-      db:
-        condition: service_healthy
+      - db
 
   db:
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -29,18 +28,6 @@ services:
     volumes:
       - mssql_data:/var/opt/mssql
       - ./sql:/init
-    healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'YourStrong!Passw0rd' -Q 'SELECT 1'"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
-    command: >
-      /bin/bash -c "
-        /opt/mssql/bin/sqlservr & 
-        sleep 20 && 
-        /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'YourStrong!Passw0rd' -i /init/init.sql &&
-        wait
-      "
 
 volumes:
   mssql_data:
