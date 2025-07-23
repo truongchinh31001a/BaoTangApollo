@@ -15,7 +15,7 @@ export default function TicketDetailModal({ open, ticket, onClose }) {
             content: (
                 <div className="flex flex-col items-center mt-4">
                     <QRCodeCanvas
-                        value={ticket.LanguageCode}
+                        value={`${ticket.LanguageCode}-${ticket.TicketId}`}
                         size={200}
                     />
                     <p className="mt-4">

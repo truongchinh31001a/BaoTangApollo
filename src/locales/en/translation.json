@@ -50,7 +50,15 @@
         "update_error": "Update failed",
         "no_data": "No data available",
         "lang_vi": "Vietnamese",
-        "lang_en": "English"
+        "lang_en": "English",
+        "view": "View Details",
+        "select_artifact": "Select an artifact",
+        "validation_select": "Please select an artifact and a position",
+        "load_error": "Failed to load artifact list",
+        "add_location": "Add Location"
+    },
+    "zone": {
+        "select_placeholder": "Select Zone"
     },
     "common": {
         "edit": "Edit",
@@ -61,7 +69,7 @@
         "loading": "Loading...",
         "vietnamese": "Vietnamese",
         "english": "English",
-        "add": "Thêm mới",
+        "add": "Add",
         "no_data": "No data",
         "action": "Action"
     },
@@ -70,7 +78,9 @@
         "name": "Artifact Name",
         "image": "Image",
         "zone": "Zone",
-        "location_title": "Artifact Locations List"
+        "location_title": "Artifact Locations List",
+        "zoneImage": "Location",
+        "no_data": "No artifacts in this zone"
     },
     "tickets": {
         "title": "Tickets List",
@@ -135,5 +145,29 @@
         "no_image": "No image",
         "view_detail": "View Details",
         "fetch_error": "Unable to load map zones"
+    },
+    "sidebar": {
+        "dashboard": "Dashboard",
+        "manage": "Manage",
+        "tickets": "Tickets",
+        "artifacts": "Artifacts",
+        "artifact_locations": "Artifact Locations",
+        "stories": "Stories",
+        "map_zones": "Map Zones"
+    },
+    "auth": {
+        "login": "Login",
+        "logout": "Logout",
+        "register": "Register",
+        "username": "Username",
+        "password": "Password",
+        "confirm_password": "Confirm Password",
+        "email": "Email",
+        "login_success": "Login successful",
+        "login_error": "Login failed, please try again",
+        "register_success": "Registration successful, please login",
+        "register_error": "Registration failed, please try again",
+        "session_expired": "Session expired, please login again",
+        "unauthorized": "Unauthorized access, please login"
     }
 }

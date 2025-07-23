@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { Table, Image, Button, Tooltip, Select, message, Modal } from 'antd';
 import { FolderViewOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import ArtifactLocationModal from '@/components/layout/artifactlocations/LocationMapModal';
+import AddArtifactLocationModal from '@/components/layout/artifactlocations/AddArtifactLocationModal';
 
 const { Option } = Select;
 
@@ -15,6 +17,8 @@ export default function ArtifactLocationsPage() {
     const [loading, setLoading] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [modalData, setModalData] = useState(null);
+    const [addModalOpen, setAddModalOpen] = useState(false);
+
 
     const fetchZones = async () => {
         try {
@@ -101,7 +105,7 @@ export default function ArtifactLocationsPage() {
             ),
         },
         {
-            title: t('common.actions') || 'Thao tác',
+            title: t('common.action') || 'Thao tác',
             key: 'action',
             width: 120,
             align: 'center',
@@ -116,18 +120,23 @@ export default function ArtifactLocationsPage() {
 
     return (
         <div className="p-6">
-            <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold">
-                    {t('artifact.location_title') || 'Danh sách vị trí hiện vật'}
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4">
+                <h1 className="text-2xl font-bold text-neutral-800 dark:text-neutral-200">
+                    {t('artifact.location_title')}
                 </h1>
 
-                <Select
-                    value={selectedZoneId}
-                    onChange={(value) => setSelectedZoneId(value)}
-                    style={{ width: 200 }}
-                    placeholder="Chọn khu vực"
-                    options={zones.map((z) => ({ label: z.Name, value: z.ZoneId }))}
-                />
+                <div className="flex items-center gap-4">
+                    <Select
+                        value={selectedZoneId}
+                        onChange={(value) => setSelectedZoneId(value)}
+                        style={{ width: 220 }}
+                        placeholder={t('zone.select_placeholder')}
+                        options={zones.map((z) => ({ label: z.Name, value: z.ZoneId }))}
+                    />
+                    <Button type="primary" onClick={() => setAddModalOpen(true)}>
+                        + {t('common.add')}
+                    </Button>
+                </div>
             </div>
 
             <Table
@@ -140,43 +149,25 @@ export default function ArtifactLocationsPage() {
                 locale={{ emptyText: t('artifact.no_data') || 'Không có hiện vật trong khu vực này' }}
             />
 
-            <Modal
+            <ArtifactLocationModal
                 open={modalOpen}
-                onCancel={() => setModalOpen(false)}
-                title={modalData?.ArtifactName || 'Vị trí hiện vật'}
-                footer={null}
-                centered
-                width={800}
-            >
-                {modalData?.MapImageUrl && (
-                    <div
-                        style={{
-                            position: 'relative',
-                            width: '100%',
-                            paddingTop: '56.25%',
-                            backgroundImage: `url(${modalData.MapImageUrl})`,
-                            backgroundSize: 'contain',
-                            backgroundRepeat: 'no-repeat',
-                            backgroundPosition: 'center',
-                        }}
-                    >
-                        <div
-                            style={{
-                                position: 'absolute',
-                                top: modalData.PosY,
-                                left: modalData.PosX,
-                                width: 14,
-                                height: 14,
-                                backgroundColor: 'red',
-                                borderRadius: '50%',
-                                border: '2px solid white',
-                                transform: 'translate(-50%, -50%)',
-                            }}
-                            title={`Toạ độ: (${modalData.PosX}, ${modalData.PosY})`}
-                        />
-                    </div>
-                )}
-            </Modal>
+                onClose={() => setModalOpen(false)}
+                data={modalData}
+            />
+
+
+            <AddArtifactLocationModal
+                open={addModalOpen}
+                onClose={() => setAddModalOpen(false)}
+                zoneId={selectedZoneId}
+                zoneImageUrl={zones.find(z => z.ZoneId === selectedZoneId)?.MapImageUrl}
+                existingArtifactIds={locations.map((l) => l.ArtifactId)}
+                onSuccess={() => {
+                    setAddModalOpen(false);
+                    fetchLocationsByZone(selectedZoneId);
+                }}
+            />
+
         </div>
     );
 }

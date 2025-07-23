@@ -24,7 +24,7 @@ export function LoginForm() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Đăng nhập thất bại!");
 
-      toast.success("🎉 Đăng nhập thành công! Đang chuyển hướng...");
+      toast.success("Đăng nhập thành công! Đang chuyển hướng...");
 
       setTimeout(() => {
         window.location.href = "/";

@@ -103,8 +103,8 @@ export async function getArtifactsByZoneId(zoneId, lang) {
                 at.Description,
                 al.PosX,
                 al.PosY,
-                z.MapImageUrl AS ZoneImageUrl,      -- ✅ Thêm ảnh của zone
-                z.Name AS ZoneName                  -- ✅ Optionally lấy luôn tên zone
+                z.MapImageUrl AS ZoneImageUrl,     
+                z.Name AS ZoneName
             FROM ArtifactLocations al
             JOIN Artifacts a ON al.ArtifactId = a.ArtifactId
             JOIN ArtifactTranslations at ON at.ArtifactId = a.ArtifactId AND at.LanguageCode = @Lang

@@ -50,7 +50,14 @@
         "update_error": "Cập nhật thất bại",
         "no_data": "Không có dữ liệu",
         "lang_vi": "Tiếng Việt",
-        "lang_en": "English"
+        "lang_en": "English",
+        "view": "Xem chi tiết",
+        "select_artifact": "Chọn hiện vật",
+        "validation_select": "Vui lòng chọn hiện vật và vị trí",
+        "load_error": "Không thể tải danh sách hiện vật"
+    },
+    "zone": {
+        "select_placeholder": "Chọn khu vực"
     },
     "common": {
         "edit": "Sửa",
@@ -62,14 +69,17 @@
         "vietnamese": "Tiếng Việt",
         "english": "English",
         "no_data": "Không có",
-        "action": "Hành động"
+        "action": "Hành động",
+        "add": "Thêm"
     },
     "artifact": {
         "index": "STT",
         "name": "Tên hiện vật",
         "image": "Ảnh",
         "zone": "Khu vực",
-        "location_title": "Danh sách vị trí hiện vật"
+        "location_title": "Danh sách vị trí hiện vật",
+        "zoneImage": "Khu vực",
+        "no_data": "Không có hiện vật trong khu vực này"
     },
     "tickets": {
         "title": "Danh sách Tickets",
@@ -134,5 +144,25 @@
         "no_image": "Không có",
         "view_detail": "Xem chi tiết",
         "fetch_error": "Không thể tải danh sách khu vực"
+    },
+    "sidebar": {
+        "dashboard": "Trang chủ",
+        "manage": "Quản lý",
+        "tickets": "Vé",
+        "artifacts": "Hiện vật",
+        "artifact_locations": "Vị trí hiện vật",
+        "stories": "Câu chuyện",
+        "map_zones": "Khu vực bản đồ"
+    },
+    "auth": {
+        "login": "Đăng nhập",
+        "logout": "Đăng xuất",
+        "username": "Tên đăng nhập",
+        "password": "Mật khẩu",
+        "login_success": "Đăng nhập thành công",
+        "login_failed": "Đăng nhập thất bại",
+        "unauthorized": "Bạn không có quyền truy cập vào trang này",
+        "session_expired": "Phiên làm việc đã hết hạn, vui lòng đăng nhập lại",
+        "register": "Đăng ký"
     }
 }
