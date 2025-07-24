@@ -16,17 +16,24 @@ export async function handleLogin(req) {
 
     const token = signToken(user);
 
-    const res = NextResponse.json({
+    // ✅ Tạo response trước
+    const res = new NextResponse(JSON.stringify({
         message: 'Đăng nhập thành công',
+        token: token,
         role: user.Role,
         username: user.Username
+    }), {
+        status: 200,
+        headers: {
+            'Content-Type': 'application/json'
+        }
     });
 
-    // ✅ Gắn token vào cookie
+    // ✅ Gắn cookie
     res.cookies.set('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 60 * 60 * 24 * 7, // 7 ngày
+        httpOnly: true, // ✅ nên giữ
+        secure: isProduction && process.env.USE_HTTPS === 'true',
+        maxAge: 60 * 60 * 24 * 7,
         path: '/',
         sameSite: 'lax'
     });
