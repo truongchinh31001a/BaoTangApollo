@@ -34,7 +34,6 @@ export async function requireAuth(req) {
     try {
         const cookieStore = await cookies();
         token = cookieStore.get('token')?.value;
-        console.log('🍪 Token from cookie:', token);
     } catch (err) {
         console.error('❌ Error reading cookie:', err.message);
     }
@@ -42,7 +41,6 @@ export async function requireAuth(req) {
     // ✅ Nếu không có → thử lấy từ header
     if (!token && req?.headers) {
         const authHeader = req.headers.get('authorization');
-        console.log('🔍 Authorization header:', authHeader);
         if (authHeader?.startsWith('Bearer ')) {
             token = authHeader.split(' ')[1];
             console.log('🎯 Token from header:', token);

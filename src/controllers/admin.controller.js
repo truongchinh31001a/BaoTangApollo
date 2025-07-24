@@ -16,6 +16,7 @@ export async function handleLogin(req) {
 
     const token = signToken(user);
 
+    const isProduction = process.env.NODE_ENV;
     // ✅ Tạo response trước
     const res = new NextResponse(JSON.stringify({
         message: 'Đăng nhập thành công',
