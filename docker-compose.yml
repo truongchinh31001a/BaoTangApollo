@@ -13,7 +13,7 @@ services:
       - DB_NAME=apollo
       - EMAIL_USER=chinh.pt@pctu.edu.vn
       - EMAIL_PASS=rdmb ficz spvs xgsv
-      - BASE_URL=http://192.168.1.197:3000
+      - BASE_URL=http://103.173.226.103:3000
       - JWT_SECRET=baotangAPOLLOPCT!%%%!
       - NODE_ENV=PRod?????duc**tion
       - USE_HTTPS=false
